@@ -1,4 +1,4 @@
-// NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends 
+﻿// NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends 
 // A similar pcsp file will have to be generated from the home team POV to meaningfully compare which team has the higher chance of scoring during an attack
 
 // Position of players in grid
@@ -34,12 +34,27 @@ enum {SP, LP, LS, FI, VO, HD};
 // Soccer field grid
 // 1 means there is a player in that position
 // 0 means there is no player in that position
-// 					    L, LR, CL, C, CR, RL, R
+// [-1 -1 -1 -1 -1 -1   L, LR, CL, C, CR, RL, R	   -1 -1 -1 -1 -1 -1]
 var atkKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
-var atkDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
-var atkMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
-var atkForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+
+var atkDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //A
+var defForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)]; //D
+
+var atkMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)]; //A
+var defMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //D
+
+var atkForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)]; //A
+var defDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //D
+
 var defKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
+
+
+/*
+atkFor -> finishing(defPos[-2, +2], average of the three defending stats) -> goal
+atkMid -> shortpass(defPos[-2, +2], average of the three defending stats) -> atkFor
+
+defDef -> tackle [] foul(aggression) -> penalty_kick(atkFor[finishing] vs defKep)
+*/
 
 ///////////// AWAY TEAM PLAYERS (Attacking Team) /////////////
 // The parameters represent the probabilities specific to the player 
@@ -70,7 +85,7 @@ AtkFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) []
 		 [pos[LR] == 1]For(73, 65, 65, 69, 75, LR);
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
-// Home team defenders, midfielders and forwards are already implicitly "defending" via the prob. to lose the ball parameter
+// Home team defenders, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
 DefKep = [pos[C] == 1]Kep_2(72, C);
 
 ///////////// Individual Positions /////////////
@@ -270,6 +285,9 @@ UpdatePos(p, e) = case {
 #define Goal3 danger <= 3;
 #define Goal4 danger <= 4;
 #assert AtkKep deadlockfree;
+
+// G: Globally. has to hold on the entire subsequent path.
+// F: Finally. eventually has to hold (somewhere on the subsequent path》
 #assert AtkKep |= F G Goal0 with prob;
 #assert AtkKep |= F G Goal1 with prob;
 #assert AtkKep |= F G Goal2 with prob;
