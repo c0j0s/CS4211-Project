@@ -2,4 +2,7 @@
   "files.associations": {
     "*.pcsp": "csharp"
   },
+  "[csharp]": {
+    "files.encoding": "utf8bom",
+  },
 }
