@@ -86,7 +86,18 @@ AtkFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) []
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
 // Home team defenders, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
-DefKep = [pos[C] == 1]Kep_2(72, C);
+
+// the defending keeper is "Artur Boruc"
+// gk_diving=82
+// gk_handling=72
+// gk_reflexes=83
+// gk_speed=44
+// gk_positioning=74
+// average=71
+// Note: gk_kicking only measures the goalkeeper's ability to kick the ball from
+// out of the hands or on the ground
+
+DefKep = [pos[C] == 1]Kep_2(71, C);
 
 ///////////// Individual Positions /////////////
 // There is a guard to every action (e.g., shortPass) a player can take
@@ -228,6 +239,32 @@ Kep_2(i, p) = attemptSave -> pcase {
 								100-i: concede -> Skip
 							};
 
+
+// we calculate the probability of a penalty kick happening using 0.25 * mentality_aggression of defender
+// unfortunately, PAT3 doesn't like dot notation (i.e., `0.25`) so we'll have to use divide instead (i.e., `1/4`)
+// lowest mentality_aggression in epl_ratings_20152016 = 9
+// highest mentality_aggression in epl_ratings_20152016 = 94
+CheckIfPenaltyKick(mentality_aggression) = attacker_clash_with_defender -> pcase {
+	((1/4) * mentality_aggression): penalty_kick -> SimulatePenaltyKick(1,2,3,4,5,6/* dummy parameters */)
+	100 - ((1/4) * mentality_aggression): no_penalty_kick -> Kep_2(1,2/* dummy parameters*/)
+};
+
+// there is `gk_speed` but no `goalkeeping_speed`
+// => use the `gk_*` stats instead of the `goalkeeping_*` stats 
+SimulatePenaltyKick(
+	atk_mentality_penalties,
+	atk_skill_fk_accuracy,
+	gk_diving,
+	gk_handling,
+	gk_reflexes,
+	gk_speed,
+	gk_positioning
+) = penalty_kick -> pcase {
+		// average atk stat
+		(atk_mentality_penalties + atk_skill_fk_accuracy) / 2: goal -> Skip
+		// average gk stat
+		(gk_diving + gk_handling + gk_reflexes + gk_speed, gk_positioning) / 5: saved{danger = 1;} -> Skip
+	};
 
 /*
 	params: current position, action
