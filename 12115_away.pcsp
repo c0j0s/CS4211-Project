@@ -136,7 +136,7 @@ AwayKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		awayDefPos[position+2] == 1
 	]	shortPass -> pcase {
 						attacking_short_pass: pass -> UpdatePos(position, SP); AtkDef
-						aggregated_intercept: intercepted{danger = 5; ball_possession=} -> openPos(); DefFor
+						aggregated_intercept: intercepted{danger = 5; ball_possession=HOME_TEAM} -> openPos(); DefFor
 
 					}
 	[] // general choice
