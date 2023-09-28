@@ -1,4 +1,4 @@
-﻿// NOTE: This will only produce probabilities of goal when the away team attacks while the home team homeends 
+// NOTE: This will only produce probabilities of goal when the away team attacks while the home team homeends 
 // A similar pcsp file will have to be generated from the home team POV to meaningfully compare which team has the higher chance of scoring during an attack
 
 // Position of players in grid
@@ -10,10 +10,6 @@
 #define CR 10;
 #define RL 11;
 #define R 12;
-
-
-#define HOME_TEAM 1123;
-#define AWAY_TEAM 4435;
 
 #define MAX_STEP 180;
 
