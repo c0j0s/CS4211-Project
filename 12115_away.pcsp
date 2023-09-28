@@ -62,7 +62,7 @@ defDef -> tackle [] foul(aggression) -> penalty_kick(atkFor[finishing] vs defKep
 
 // For example keepers can only ShortPass or LongPass
 // Here 64, 64 represents the FIFA ShortPass and LongPass ratings for this particular player
-AtkKep = [pos[C] == 1]Kep_1(64, 64, C);
+AtkKep = [pos[C] == 1]Kep_1(64, 64, 50, C);
 
 // Here for the defenders, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively 
 // The prob. to lose the ball for the attacking team's defenders was calculated based on the defending team forward's player ratings 
@@ -72,11 +72,19 @@ AtkDef = [pos[R ] == 1]Def(73, 71, 38, R) []
 		 [pos[CL] == 1]Def(68, 63, 38, CL) [] 
 		 [pos[L ] == 1]Def(72, 59, 38, L);
 
+DefFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) [] 
+		 [pos[C ] == 1]For(75, 73, 66, 76, 75, C) [] 
+		 [pos[LR] == 1]For(73, 65, 65, 69, 75, LR);
+
 // Similar to defenders, midfielders and forwards have their own specific parameters
 // See their processes below for more information on what those parameters are
 // The prob. to lose for the attacking team's midfielders is based on the defending team's midfielders
 // The prob. to lose for the attacking team's forwards is based on the defending team's defenders
 AtkMid = [pos[RL] == 1]Mid(79, 76, 74, 59, RL) [] 
+		 [pos[C ] == 1]Mid(83, 80, 57, 59, C) [] 
+		 [pos[LR] == 1]Mid(78, 73, 75, 59, LR);
+		 
+DefMid = [pos[RL] == 1]Mid(79, 76, 74, 59, RL) [] 
 		 [pos[C ] == 1]Mid(83, 80, 57, 59, C) [] 
 		 [pos[LR] == 1]Mid(78, 73, 75, 59, LR);
 		 
@@ -108,60 +116,65 @@ DefKep = [pos[C] == 1]Kep_2(71, C);
 
 /**
 	AtkKep -> [ i:short pass | j:long pass success ] -> AtkDef
+	attacking_short_pass:
+	skill_long_pass:
+	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_def_for
+	 num_def_for
 */
-Kep_1(i, j, p) = [
-		atkDefPos[p-2] == 1 || 
-		atkDefPos[p-1] == 1 ||
-		atkDefPos[p  ] == 1 || 
-		atkDefPos[p+1] == 1 || 
-		atkDefPos[p+2] == 1
+Kep_1(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+		atkDefPos[position-2] == 1 || 
+		atkDefPos[position-1] == 1 ||
+		atkDefPos[position  ] == 1 || 
+		atkDefPos[position+1] == 1 || 
+		atkDefPos[position+2] == 1
 	]	shortPass -> pcase {
-						i: 		pass -> UpdatePos(p, SP); AtkDef // P(i) of making short pass
-						100-i: 	intercepted{danger = 5;} -> Skip  
+						attacking_short_pass: pass -> UpdatePos(position, SP); AtkDef // P(i) of making short pass
+						aggregated_intercept: intercepted{danger = 5;} -> openPos(); DefFor
 					}
 	[] // general choice
 	[
-		atkDefPos[p-6] == 1 ||
-		atkDefPos[p-5] == 1 ||
-		atkDefPos[p-4] == 1 ||
-		atkDefPos[p-3] == 1 ||
-		atkDefPos[p+3] == 1 ||
-		atkDefPos[p+4] == 1 ||
-		atkDefPos[p+5] == 1 ||
-		atkDefPos[p+6] == 1
+		atkDefPos[position-6] == 1 ||
+		atkDefPos[position-5] == 1 ||
+		atkDefPos[position-4] == 1 ||
+		atkDefPos[position-3] == 1 ||
+		atkDefPos[position+3] == 1 ||
+		atkDefPos[position+4] == 1 ||
+		atkDefPos[position+5] == 1 ||
+		atkDefPos[position+6] == 1
 	]	longPass -> pcase {
-						j: 		pass -> UpdatePos(p, LP); AtkDef // P(i) of making long pass
-						100-j: 	intercepted{danger = 5;} -> Skip
+						skill_long_pass: 		pass -> UpdatePos(position, LP); AtkDef // P(i) of making long pass
+						aggregated_intercept: 	intercepted{danger = 5;} -> openPos(); DefFor
 					};
 
 /*
 	AtkDef -> [ i:short pass | j:long pass ] -> AtkMid
 	k: defending team forward's player ratings (weighted combination of the standing tackle, sliding tackle, and interception)
 */
-Def(i, j, k, p) = [
-		atkMidPos[p-2] == 1 ||
-		atkMidPos[p-1] == 1 ||
-		atkMidPos[p  ] == 1 ||
-		atkMidPos[p+1] == 1 ||
-		atkMidPos[p+2] == 1
+Def(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+		atkMidPos[position-2] == 1 ||
+		atkMidPos[position-1] == 1 ||
+		atkMidPos[position  ] == 1 ||
+		atkMidPos[position+1] == 1 ||
+		atkMidPos[position+2] == 1
 	]	shortPass -> pcase {
-					i: pass -> UpdatePos(p, SP); AtkMid
-					k: tackled{danger = 4;} -> Skip
+					attacking_short_pass: pass -> UpdatePos(position, SP); AtkMid
+					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefMid
 				}
 	 [] // general choice
 	[
-		atkMidPos[p-6] == 1 ||
-		atkMidPos[p-5] == 1 ||
-		atkMidPos[p-4] == 1 ||
-		atkMidPos[p-3] == 1 ||
-		atkMidPos[p+3] == 1 ||
-		atkMidPos[p+4] == 1 ||
-		atkMidPos[p+5] == 1 ||
-		atkMidPos[p+6] == 1
+		atkMidPos[position-6] == 1 ||
+		atkMidPos[position-5] == 1 ||
+		atkMidPos[position-4] == 1 ||
+		atkMidPos[position-3] == 1 ||
+		atkMidPos[position+3] == 1 ||
+		atkMidPos[position+4] == 1 ||
+		atkMidPos[position+5] == 1 ||
+		atkMidPos[position+6] == 1
 	]	longPass -> pcase {
-					j: pass -> UpdatePos(p, LP); AtkMid
-					k: tackled{danger = 4;} -> Skip
+					skill_long_pass: pass -> UpdatePos(position, LP); AtkMid
+					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefMid
 				};
+
 
 /**
 	AtkMid -> [ i:short pass | j:long pass  | k:long shot ] -> AtkFor
@@ -245,7 +258,7 @@ Kep_2(i, p) = attemptSave -> pcase {
 // lowest mentality_aggression in epl_ratings_20152016 = 9
 // highest mentality_aggression in epl_ratings_20152016 = 94
 CheckIfPenaltyKick(mentality_aggression) = attacker_clash_with_defender -> pcase {
-	((1/4) * mentality_aggression): penalty_kick -> SimulatePenaltyKick(1,2,3,4,5,6/* dummy parameters */)
+	((1/4) * mentality_aggression): penalty_kick -> SimulatePenaltyKick(1,2,3,4,5,6,7/* dummy parameters */)
 	100 - ((1/4) * mentality_aggression): no_penalty_kick -> Kep_2(1,2/* dummy parameters*/)
 };
 
@@ -263,13 +276,15 @@ SimulatePenaltyKick(
 		// average atk stat
 		(atk_mentality_penalties + atk_skill_fk_accuracy) / 2: goal -> Skip
 		// average gk stat
-		(gk_diving + gk_handling + gk_reflexes + gk_speed, gk_positioning) / 5: saved{danger = 1;} -> Skip
+		(gk_diving + gk_handling + gk_reflexes + gk_speed + gk_positioning) / 5: saved{danger = 1;} -> Skip
 	};
 
 /*
 	params: current position, action
 	return: update the position eligible to receive the ball
 */
+openPos() = setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
+
 UpdatePos(p, e) = case {
 	p == L: 
 		case {
