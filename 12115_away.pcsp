@@ -40,17 +40,14 @@ enum {SP, LP, LS, FI, VO, HD};
 // 0 means there is no player in that position
 // [-1 -1 -1 -1 -1 -1   L, LR, CL, C, CR, RL, R	   -1 -1 -1 -1 -1 -1]
 var awayKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
-
-var awayDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //A
-var homeForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)]; //D
-
-var awayMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)]; //A
-var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //D
-
-var awayForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)]; //A
-var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //D
+var awayDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var awayMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+var awayForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
 
 var homeKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
+var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var homeForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)];
 
 var ball_possession=AWAY_TEAM;
 
