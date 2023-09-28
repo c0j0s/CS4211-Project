@@ -62,7 +62,9 @@ homeDef -> tackle [] foul(aggression) -> penalty_kick(awayFor[finishing] vs home
 // Here 64, 64 represents the FIFA ShortPass and LongPass ratings for this particular player
 AwayKepAtk = [pos[C] == 1]AwayKepPass(64, 64, 50, C);
 
-AwayKepDef = [pos[C] == 1]AwayKepSave(71, C);
+AwayKepDef = AwayKepSave(71, C);
+
+AwayPen = SimulatePenaltyKick() 
 
 // Here for the defender, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively 
 // The prob. to lose the ball for the attacking team's defender was calculated based on the defending team forward's player ratings 
@@ -80,7 +82,7 @@ AwayMid = [pos[RL] == 1]AwayMidPass(79, 76, 74, 59, RL) []
 		 [pos[C ] == 1]AwayMidPass(83, 80, 57, 59, C) [] 
 		 [pos[LR] == 1]AwayMidPass(78, 73, 75, 59, LR);
 	
-		 
+		 //TODO: pass the penalty stat
 AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75, RL) [] 
 		 [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 75, C) [] 
 		 [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 75, LR);
@@ -100,7 +102,9 @@ AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75, RL) []
 
 HomeKepAtk = [pos[C] == 1]HomeKepPass(64, 64, 50, C);
 
-HomeKepDef = [pos[C] == 1]HomeKepSave(71, C);
+HomeKepDef = HomeKepSave(71, C);
+
+HomePen = SimulatePenaltyKick()
 
 HomeDef = [pos[R ] == 1]HomeDefPass(73, 71, 38, R) []
 		 [pos[CR] == 1]HomeDefPass(68, 63, 38, CR) [] 
@@ -115,6 +119,7 @@ HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, RL) []
 		 [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75, C) [] 
 		 [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75, LR);
 
+
 ///////////// Individual Positions /////////////
 // There is a guard to every action (e.g., shortPass) a player can take
 // The guard makes sure that there are players eligible to receive the ball should that action happen
@@ -123,7 +128,7 @@ HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, RL) []
 // The eligible players are updated with UpdatePos
 
 /**
-	AwayKepPass -> [ i:short pass | j:long pass success ] -> AtkDef
+	AwayKep -> AwayKepPass -> AwayDef/HomeFor
 	attacking_short_pass:
 	skill_long_pass:
 	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_home_for
@@ -155,6 +160,12 @@ AwayKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 						aggregated_intercept: 	intercepted{} -> openPos(); HomeFor
 					};
 
+/**
+	HomeKep -> HomeKepPass -> HomeDef/HomeFor
+	attacking_short_pass:
+	skill_long_pass:
+	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_home_for
+*/
 HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		homeDefPos[position-2] == 1 || 
 		homeDefPos[position-1] == 1 ||
@@ -182,7 +193,7 @@ HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 					};
 
 /*
-	AtkDef -> [ i:short pass | j:long pass ] -> AwayMid
+	AwayDef -> AwayDefPass -> AwayMid/HomeMid
 	k: defending team forward's player ratings (weighted combination of the standing tackle, sliding tackle, and interception)
 */
 AwayDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
@@ -312,6 +323,7 @@ AwayForPass(i, j, k, l, m, position) = [
 	]	finish -> pcase {
 					i: shoot -> UpdatePos(position, FI); HomeKepDef
 					m: tackled{} -> openPos(); HomeDef
+					p: penalty{} => AwayPen
 				}
 	 [] // general choice
 	 [
@@ -388,9 +400,9 @@ CheckIfPenaltyKick(mentality_aggression) = attacker_clash_with_defender -> pcase
 
 // there is `gk_speed` but no `goalkeeping_speed`
 // => use the `gk_*` stats instead of the `goalkeeping_*` stats 
-SimulatePenaltyKick(
-	away_mentality_penalties,
-	away_skill_fk_accuracy,
+AwaySimulatePenaltyKick(
+	mentality_penalties,
+	skill_fk_accuracy,
 	gk_diving,
 	gk_handling,
 	gk_reflexes,
@@ -398,7 +410,22 @@ SimulatePenaltyKick(
 	gk_positioning
 ) = penalty_kick -> pcase {
 		// average away stat
-		(away_mentality_penalties + away_skill_fk_accuracy) / 2: goal -> Skip
+		(mentality_penalties + skill_fk_accuracy) / 2: goal{ away_team_score++ } -> Skip
+		// average gk stat
+		(gk_diving + gk_handling + gk_reflexes + gk_speed + gk_positioning) / 5: saved{} -> Skip
+	};
+
+HomeSimulatePenaltyKick(
+	mentality_penalties,
+	skill_fk_accuracy,
+	gk_diving,
+	gk_handling,
+	gk_reflexes,
+	gk_speed,
+	gk_positioning
+) = penalty_kick -> pcase {
+		// average away stat
+		(mentality_penalties + skill_fk_accuracy) / 2: goal{ home_team_score++ } -> Skip
 		// average gk stat
 		(gk_diving + gk_handling + gk_reflexes + gk_speed + gk_positioning) / 5: saved{} -> Skip
 	};
