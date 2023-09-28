@@ -118,7 +118,7 @@ HomeKep = [pos[C] == 1]Kep_2(71, C);
 // There is a guard to every action (e.g., shortPass) a player can take
 // The guard makes sure that there are players eligible to receive the ball should that action happen
 // Furthermore, based on the type of action taken, only some players will be eligible to receive the ball
-// E.g., If a homeender at L does a shortPass, the midfielder at R should not be able to receive it
+// E.g., If a defender at L does a shortPass, the midfielder at R should not be able to receive it
 // The eligible players are updated with UpdatePos
 
 /**
@@ -126,7 +126,6 @@ HomeKep = [pos[C] == 1]Kep_2(71, C);
 	attacking_short_pass:
 	skill_long_pass:
 	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_home_for
-	 num_home_for
 */
 
 AwayKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
@@ -162,8 +161,8 @@ HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		awayDefPos[position+1] == 1 || 
 		awayDefPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); DefDef
-						aggregated_intercept: intercepted{danger = 5; ball_possession=} -> openPos(); DefFor
+						attacking_short_pass: pass -> UpdatePos(position, SP); HomeDef
+						aggregated_intercept: intercepted{danger = 5; ball_possession=} -> openPos(); AwayFor
 
 					}
 	[] // general choice
@@ -249,7 +248,7 @@ Mid(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, p
 
 /**
 	AtkFor -> [ i:finish | j:long shot | k:volley | l:header ] -> Defkep
-	m: defending team homeender player ratings 
+	m: defending team defender player ratings 
 */
 For(i, j, k, l, m, position) = [
 		homeKepPos[C] == 1
@@ -288,11 +287,11 @@ Kep_2(i, position) = attemptSave -> pcase {
 							};
 
 
-// we calculate the probability of a penalty kick happening using 0.25 * mentality_aggression of homeender
+// we calculate the probability of a penalty kick happening using 0.25 * mentality_aggression of defender
 // unfortunately, PAT3 doesn't like dot notation (i.e., `0.25`) so we'll have to use divide instead (i.e., `1/4`)
 // lowest mentality_aggression in epl_ratings_20152016 = 9
 // highest mentality_aggression in epl_ratings_20152016 = 94
-CheckIfPenaltyKick(mentality_aggression) = attacker_clash_with_homeender -> pcase {
+CheckIfPenaltyKick(mentality_aggression) = attacker_clash_with_defender -> pcase {
 	((1/4) * mentality_aggression): penalty_kick -> SimulatePenaltyKick(1,2,3,4,5,6,7/* dummy parameters */)
 	100 - ((1/4) * mentality_aggression): no_penalty_kick -> Kep_2(1,2/* dummy parameters*/)
 };
