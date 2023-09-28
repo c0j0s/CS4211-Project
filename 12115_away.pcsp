@@ -1,4 +1,4 @@
-// NOTE: This will only produce probabilities of goal when the away team attacks while the home team homeends 
+﻿// NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends 
 // A similar pcsp file will have to be generated from the home team POV to meaningfully compare which team has the higher chance of scoring during an attack
 
 // Position of players in grid
@@ -22,6 +22,8 @@ var pos = [-1(6), 0, 0, 0, 1, 0, 0, 0, -1(6)];
 
 // If the ball is in the air
 var inAir = false;
+
+// number of "steps" that the model has taken
 var step = 0;
 
 // Actions based on FIFA player ratings
@@ -44,8 +46,9 @@ var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
 var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
 var homeForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)];
 
-var away_team_score=0;
-var home_team_score=0;
+var away_team_score = 0;
+var home_team_score = 0;
+
 /*
 awayFor -> finishing(homePos[-2, +2], average of the three defending stats) -> goal
 awayMid -> shortpass(homePos[-2, +2], average of the three defending stats) -> awayFor
@@ -80,9 +83,9 @@ AwayMid = [pos[RL] == 1]AwayMidPass(79, 76, 74, 59, RL) []
 		 [pos[LR] == 1]AwayMidPass(78, 73, 75, 59, LR);
 	
 		 //TODO: pass the penalty stat
-AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75, 1, 1, 2, 3, 4, 5, 6, 7, RL) [] 
-		 [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 75,  1, 1, 2, 3, 4, 5, 6, 7,C) [] 
-		 [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 75,  1, 1, 2, 3, 4, 5, 6, 7,LR);
+AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75,11,11,11, RL) [] 
+		 [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 75,11,11,11,C) [] 
+		 [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 75, 11, 11,11,LR);
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
 // Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
@@ -111,9 +114,9 @@ HomeMid = [pos[RL] == 1]HomeMidPass(79, 76, 74, 59, RL) []
 		 [pos[LR] == 1]HomeMidPass(78, 73, 75, 59, LR);
 
 // Fill in stats
-HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 1, 1, 2, 3, 4, 5, 6, 7,RL) [] 
-		 [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75,  1, 1, 2, 3, 4, 5, 6, 7,C) [] 
-		 [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75,  1, 1, 2, 3, 4, 5, 6, 7,LR);
+HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 11, 11, 11,RL) [] 
+		 [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75,11,11,11,C) [] 
+		 [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75,11,11,11,LR);
 
 
 ///////////// Individual Positions /////////////
@@ -125,20 +128,25 @@ HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 1, 1, 2, 3, 4, 5, 6, 7,R
 
 /**
 	AwayKep -> AwayKepPass -> AwayDef/HomeFor
-	attacking_short_pass:
-	skill_long_pass:
-	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_home_for
+	attacking_short_passing:
+	skill_long_passing:
+	aggregated_defending: avg(intercept_score + 3 defending stat) by num_home_for
 */
 
-AwayKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+AwayKepPass(
+	attacking_short_passing,
+	skill_long_passing,
+	aggregated_defending,
+	position
+) = [
 		awayDefPos[position-2] == 1 || 
 		awayDefPos[position-1] == 1 ||
 		awayDefPos[position  ] == 1 || 
 		awayDefPos[position+1] == 1 || 
 		awayDefPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); AwayDef
-						aggregated_intercept: intercepted -> openPos(); HomeFor
+						attacking_short_passing: pass -> UpdatePos(position, SP); AwayDef
+						aggregated_defending: intercepted -> openPos(); HomeFor
 
 					}
 	[] // general choice
@@ -152,25 +160,25 @@ AwayKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		awayDefPos[position+5] == 1 ||
 		awayDefPos[position+6] == 1
 	]	longPass -> pcase {
-						skill_long_pass: 		pass -> UpdatePos(position, LP); AwayDef // position(i) of making long pass
-						aggregated_intercept: 	intercepted -> openPos(); HomeFor
+						skill_long_passing: 		pass -> UpdatePos(position, LP); AwayDef // position(i) of making long pass
+						aggregated_defending: 	intercepted -> openPos(); HomeFor
 					};
 
 /**
 	HomeKep -> HomeKepPass -> HomeDef/HomeFor
-	attacking_short_pass:
-	skill_long_pass:
-	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_home_for
+	attacking_short_passing:
+	skill_long_passing:
+	aggregated_defending: avg(intercept_score + 3 defending stat) by num_home_for
 */
-HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+HomeKepPass(attacking_short_passing, skill_long_passing, aggregated_defending, position) = [
 		homeDefPos[position-2] == 1 || 
 		homeDefPos[position-1] == 1 ||
 		homeDefPos[position  ] == 1 || 
 		homeDefPos[position+1] == 1 || 
 		homeDefPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); HomeDef
-						aggregated_intercept: intercepted -> openPos(); AwayFor
+						attacking_short_passing: pass -> UpdatePos(position, SP); HomeDef
+						aggregated_defending: intercepted -> openPos(); AwayFor
 
 					}
 	[] // general choice
@@ -184,23 +192,23 @@ HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		homeDefPos[position+5] == 1 ||
 		homeDefPos[position+6] == 1
 	]	longPass -> pcase {
-						skill_long_pass: 		pass -> UpdatePos(position, LP); HomeDef // position(i) of making long pass
-						aggregated_intercept: 	intercepted -> openPos(); AwayFor
+						skill_long_passing: 		pass -> UpdatePos(position, LP); HomeDef // position(i) of making long pass
+						aggregated_defending: 	intercepted -> openPos(); AwayFor
 					};
 
 /*
 	AwayDef -> AwayDefPass -> AwayMid/HomeMid
 	k: defending team forward's player ratings (weighted combination of the standing tackle, sliding tackle, and interception)
 */
-AwayDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+AwayDefPass(attacking_short_passing, skill_long_passing, aggregated_defending, position) = [
 		awayMidPos[position-2] == 1 ||
 		awayMidPos[position-1] == 1 ||
 		awayMidPos[position  ] == 1 ||
 		awayMidPos[position+1] == 1 ||
 		awayMidPos[position+2] == 1
 	]	shortPass -> pcase {
-					attacking_short_pass: pass -> UpdatePos(position, SP); AwayMid
-					aggregated_intercept: tackled -> openPos(); HomeMid
+					attacking_short_passing: pass -> UpdatePos(position, SP); AwayMid
+					aggregated_defending: tackled -> openPos(); HomeMid
 				}
 	 [] // general choice
 	[
@@ -213,19 +221,19 @@ AwayDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		awayMidPos[position+5] == 1 ||
 		awayMidPos[position+6] == 1
 	]	longPass -> pcase {
-					skill_long_pass: pass -> UpdatePos(position, LP); AwayMid
-					aggregated_intercept: tackled -> openPos(); HomeMid
+					skill_long_passing: pass -> UpdatePos(position, LP); AwayMid
+					aggregated_defending: tackled -> openPos(); HomeMid
 				};
 
-HomeDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+HomeDefPass(attacking_short_passing, skill_long_passing, aggregated_defending, position) = [
 		homeMidPos[position-2] == 1 ||
 		homeMidPos[position-1] == 1 ||
 		homeMidPos[position  ] == 1 ||
 		homeMidPos[position+1] == 1 ||
 		homeMidPos[position+2] == 1
 	]	shortPass -> pcase {
-					attacking_short_pass: pass -> UpdatePos(position, SP); HomeMid
-					aggregated_intercept: tackled -> openPos(); AwayMid
+					attacking_short_passing: pass -> UpdatePos(position, SP); HomeMid
+					aggregated_defending: tackled -> openPos(); AwayMid
 				}
 	 [] // general choice
 	[
@@ -238,23 +246,29 @@ HomeDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 		homeMidPos[position+5] == 1 ||
 		homeMidPos[position+6] == 1
 	]	longPass -> pcase {
-					skill_long_pass: pass -> UpdatePos(position, LP); HomeMid
-					aggregated_intercept: tackled -> openPos(); AwayMid
+					skill_long_passing: pass -> UpdatePos(position, LP); HomeMid
+					aggregated_defending: tackled -> openPos(); AwayMid
 				};
 
 /**
 	AwayMid -> [ i:short pass | j:long pass  | k:long shot ] -> AwayFor
 	l: defending team forward's midfielder ratings 
 */
-AwayMidPass(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, position) = [
+AwayMidPass(
+	attacking_short_passing, 
+	skill_long_passing, 
+	power_long_shots,
+	aggregated_defending, 
+	position
+) = [
 		awayForPos[position-2] == 1 ||
 		awayForPos[position-1] == 1 ||
 		awayForPos[position  ] == 1	||
 		awayForPos[position+1] == 1 ||
 		awayForPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); AwayFor
-						aggregated_tackled: tackled -> openPos(); HomeMid
+						attacking_short_passing: pass -> UpdatePos(position, SP); AwayFor
+						aggregated_defending: tackled -> openPos(); HomeMid
 					}
 	 [] // general choice
 	[
@@ -267,26 +281,32 @@ AwayMidPass(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_ta
 		 awayForPos[position+5] == 1 ||
 		 awayForPos[position+6] == 1
 	]	 longPass -> pcase {
-						skill_long_pass: pass{inAir = true;} -> UpdatePos(position, LP); AwayFor
-						aggregated_tackled: tackled  -> openPos(); HomeMid
+						skill_long_passing: pass{inAir = true;} -> UpdatePos(position, LP); AwayFor
+						aggregated_defending: tackled  -> openPos(); HomeMid
 					}
 	 [] // general choice
 	[
 		 homeKepPos[C] == 1
 	]	longShot -> pcase {
-						power_long_shot: shoot -> UpdatePos(position, LS); HomeKepDef
-						aggregated_tackled: tackled -> openPos(); HomeMid
+						power_long_shots: shoot -> UpdatePos(position, LS); HomeKepDef
+						aggregated_defending: tackled -> openPos(); HomeMid
 					};
 
-HomeMidPass(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, position) = [
+HomeMidPass(
+	attacking_short_passing, 
+	skill_long_passing, 
+	power_long_shots,
+	aggregated_defending, 
+	position
+) = [
 		homeForPos[position-2] == 1 ||
 		homeForPos[position-1] == 1 ||
 		homeForPos[position  ] == 1	||
 		homeForPos[position+1] == 1 ||
 		homeForPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); HomeFor
-						aggregated_tackled: tackled -> openPos(); AwayMid
+						attacking_short_passing: pass -> UpdatePos(position, SP); HomeFor
+						aggregated_defending: tackled -> openPos(); AwayMid
 					}
 	 [] // general choice
 	[
@@ -299,97 +319,121 @@ HomeMidPass(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_ta
 		 homeForPos[position+5] == 1 ||
 		 homeForPos[position+6] == 1
 	]	 longPass -> pcase {
-						skill_long_pass: pass{inAir = true;} -> UpdatePos(position, LP); HomeFor
-						aggregated_tackled: tackled -> openPos(); AwayMid
+						skill_long_passing: pass{inAir = true;} -> UpdatePos(position, LP); HomeFor
+						aggregated_defending: tackled -> openPos(); AwayMid
 					}
 	 [] // general choice
 	[
 		 homeKepPos[C] == 1
 	]	longShot -> pcase {
-						power_long_shot: shoot -> UpdatePos(position, LS); AwayKepDef
-						aggregated_tackled: tackled -> openPos(); AwayMid
+						power_long_shots: shoot -> UpdatePos(position, LS); AwayKepDef
+						aggregated_defending: tackled -> openPos(); AwayMid
 					};
 
 /**
-	AwayFor -> [ i:finish | j:long shot | k:volley | l:header ] -> Defkep
-	m: defending team defender player ratings 
+	AwayFor -> [ i:finish | j:long shot | k:volley | attacking_heading_accuracy:header ] -> Defkep
+	aggregated_defending: defending team defender player ratings 
 */
-AwayForPass(i, j, k, l, m, p, a, b, c, d, e, f, g, position) = [
+AwayForPass(
+	attacking_finishing,
+	power_long_shots, 
+	attacking_volleys,
+	attacking_heading_accuracy,
+	aggregated_defending,
+	aggregated_aggression, 
+
+	aggregated_penalty_kick,
+	aggregated_gk,
+
+	position) = [
 		homeKepPos[C] == 1
 	]	finish -> pcase {
-					i: shoot -> UpdatePos(position, FI); HomeKepDef
-					m: tackled -> openPos(); HomeDef
-					p: penalty -> AwaySimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_finishing: shoot -> UpdatePos(position, FI); HomeKepDef
+					aggregated_defending: tackled -> openPos(); HomeDef
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	homeKepPos[C] == 1
 	 ]	longShot -> pcase {
-					j: shoot -> UpdatePos(position, LS); HomeKepDef
-					m: tackled -> openPos(); HomeDef
-					p: penalty -> AwaySimulatePenaltyKick(a, b, c, d, e, f, g)
+					power_long_shots: shoot -> UpdatePos(position, LS); HomeKepDef
+					aggregated_defending: tackled -> openPos(); HomeDef
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	homeKepPos[C] == 1 && inAir == true
 	 ]	volley -> pcase {
-					k: shoot -> UpdatePos(position, VO); HomeKepDef
-					m: tackled -> openPos(); HomeDef
-					p: penalty -> AwaySimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_volleys: shoot -> UpdatePos(position, VO); HomeKepDef
+					aggregated_defending: tackled -> openPos(); HomeDef
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	homeKepPos[C] == 1 && inAir == true
 	 ]	header -> pcase {
-					l: shoot -> UpdatePos(position, HD); HomeKepDef
-					m: tackled -> openPos(); HomeDef
-					p: penalty -> AwaySimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_heading_accuracy: shoot -> UpdatePos(position, HD); HomeKepDef
+					aggregated_defending: tackled -> openPos(); HomeDef
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				};
 
-HomeForPass(i, j, k, l, m, p, a, b, c, d, e, f, g, position) = [
+HomeForPass(
+	attacking_finishing, 
+	power_long_shots, 
+	attacking_volleys, 
+	attacking_heading_accuracy,
+	aggregated_defending, 
+	aggregated_aggression, 	
+	
+	aggregated_penalty_kick,
+	aggregated_gk,
+
+	position)
+	= [
+
 		awayKepPos[C] == 1
 	]	finish -> pcase {
-					i: shoot -> UpdatePos(position, FI); AwayKepDef
-					m: tackled -> openPos(); AwayDef
-					p: penalty -> HomeSimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_finishing: shoot -> UpdatePos(position, FI); AwayKepDef
+					aggregated_defending: tackled -> openPos(); AwayDef
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	awayKepPos[C] == 1
 	 ]	longShot -> pcase {
-					j: shoot -> UpdatePos(position, LS); AwayKepDef
-					m: tackled -> openPos(); AwayDef
-					p: penalty -> HomeSimulatePenaltyKick(a, b, c, d, e, f, g)
+					power_long_shots: shoot -> UpdatePos(position, LS); AwayKepDef
+					aggregated_defending: tackled -> openPos(); AwayDef
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	awayKepPos[C] == 1 && inAir == true
 	 ]	volley -> pcase {
-					k: shoot -> UpdatePos(position, VO); AwayKepDef
-					m: tackled -> openPos(); AwayDef
-					p: penalty -> HomeSimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_volleys: shoot -> UpdatePos(position, VO); AwayKepDef
+					aggregated_defending: tackled -> openPos(); AwayDef
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	 [] // general choice
 	 [
 	 	awayKepPos[C] == 1 && inAir == true
 	 ]	header -> pcase {
-					l: shoot -> UpdatePos(position, HD); AwayKepDef
-					m: tackled -> openPos(); AwayDef
-					p: penalty -> HomeSimulatePenaltyKick(a, b, c, d, e, f, g)
+					attacking_heading_accuracy: shoot -> UpdatePos(position, HD); AwayKepDef
+					aggregated_defending: tackled -> openPos(); AwayDef
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				};
 
 /**
 	HomeKep -> [ i:attemptSave ] -> Skip
 	End game after goal
 */
-AwayKepSave(i, position) = attemptSave -> pcase {
-								i: save -> UpdatePos(0, 0); AwayKepAtk
-								100-i: concede{ home_team_score++ } -> Skip
+AwayKepSave(aggregated_gk, position) = attemptSave -> pcase {
+								aggregated_gk: save -> UpdatePos(0, 0); AwayKepAtk
+								100 - aggregated_gk: concede{ home_team_score++ } -> Skip
 							};
 
-HomeKepSave(i, position) = attemptSave -> pcase {
-								i: save -> UpdatePos(0, 0); HomeKepAtk
-								100-i: concede{ away_team_score++ } -> Skip
+HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
+								aggregated_gk: save -> UpdatePos(0, 0); HomeKepAtk
+								100 - aggregated_gk: concede{ away_team_score++ } -> Skip
 							};
 
 
@@ -405,42 +449,29 @@ HomeKepSave(i, position) = attemptSave -> pcase {
 // there is `gk_speed` but no `goalkeeping_speed`
 // => use the `gk_*` stats instead of the `goalkeeping_*` stats 
 AwaySimulatePenaltyKick(
-	mentality_penalties,
-	skill_fk_accuracy,
-	gk_diving,
-	gk_handling,
-	gk_reflexes,
-	gk_speed,
-	gk_positioning
+	aggregated_penalty_kick,
+	aggregated_gk
 ) = penalty_kick -> pcase {
-		// average away stat
-		(mentality_penalties + skill_fk_accuracy) / 2: goal{ away_team_score++; } -> openPos(); HomeKepAtk
-		// average gk stat
-//		(gk_diving + gk_handling + gk_reflexes + gk_speed + gk_positioning) / 5: saved -> Skip
+		aggregated_penalty_kick: goal{ away_team_score++; } -> openPos(); HomeKepAtk
+		aggregated_gk: saved -> Skip
 	};
 
 //TODO set penalty kick to end game
 HomeSimulatePenaltyKick(
-	mentality_penalties,
-	skill_fk_accuracy,
-	gk_diving,
-	gk_handling,
-	gk_reflexes,
-	gk_speed,
-	gk_positioning
+	aggregated_penalty_kick,
+	aggregated_gk
 ) = penalty_kick -> pcase {
-		// average away stat
-		(mentality_penalties + skill_fk_accuracy) / 2: goal{ home_team_score++;  } -> openPos(); AwayKepAtk
-		// average gk stat
-//		(gk_diving + gk_handling + gk_reflexes + gk_speed + gk_positioning) / 5: saved -> Skip
+		aggregated_penalty_kick: goal{ home_team_score++; } -> openPos(); AwayKepAtk
+		aggregated_gk: saved -> Skip
+
 	};
+
+openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
 
 /*
 	params: current position, action
 	return: update the position eligible to receive the ball
 */
-openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
-
 UpdatePos(position, e) = incStep{step++} -> case {
 	position == L: 
 		case {
@@ -492,12 +523,12 @@ UpdatePos(position, e) = incStep{step++} -> case {
 // #define Goal2 danger <= 2;
 // #define Goal3 danger <= 3;
 // #define Goal4 danger <= 4;
-#define goal0 away_team_score == 1 && step <= MAX_STEP;
-#assert AwayKepAtk reaches goal0 with prob;
+#define away_team_wins away_team_score == 1 && step <= MAX_STEP;
+#assert AwayKepAtk reaches away_team_wins with prob;
 #assert AwayKepAtk deadlockfree;
 
-// G: Globally. has to hold on the entire subsequent path.
-// F: Finally. eventually has to hold (somewhere on the subsequent path》
+// G == Globally: has to hold on the entire subsequent path
+// F == Finally: eventually has to hold (somewhere on the subsequent path)
 // #assert AwayKepAtk |= F G Goal0 with prob;
 // #assert AwayKepAtk |= F G Goal1 with prob;
 // #assert AwayKepAtk |= F G Goal2 with prob;
