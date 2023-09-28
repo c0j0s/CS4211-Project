@@ -3,17 +3,17 @@
 
 // Position of players in grid
 // Left, LeftRight, and CenterLeft etc.
-#homeine L 6;
-#homeine LR 7;
-#homeine CL 8;
-#homeine C 9;
-#homeine CR 10;
-#homeine RL 11;
-#homeine R 12;
+#define L 6;
+#define LR 7;
+#define CL 8;
+#define C 9;
+#define CR 10;
+#define RL 11;
+#define R 12;
 
 
-#homeine HOME_TEAM 1123;
-#homeine AWAY_TEAM 4435;
+#define HOME_TEAM 1123;
+#define AWAY_TEAM 4435;
 
 // Grid of eligible positions that can receive the ball
 // This will change based on the previous position and the action taken
@@ -365,11 +365,11 @@ UpdatePos(position, e) = case {
 };
 
 // danger level: dist of ball to AtkKep
-#homeine Goal0 danger <= 0;
-#homeine Goal1 danger <= 1;
-#homeine Goal2 danger <= 2;
-#homeine Goal3 danger <= 3;
-#homeine Goal4 danger <= 4;
+#define Goal0 danger <= 0;
+#define Goal1 danger <= 1;
+#define Goal2 danger <= 2;
+#define Goal3 danger <= 3;
+#define Goal4 danger <= 4;
 #assert AtkKep deadlockfree;
 
 // G: Globally. has to hold on the entire subsequent path.
