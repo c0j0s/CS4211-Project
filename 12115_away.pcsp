@@ -69,35 +69,28 @@ homeDef -> tackle [] foul(aggression) -> penalty_kick(awayFor[finishing] vs home
 
 // For example keepers can only ShortPass or LongPass
 // Here 64, 64 represents the FIFA ShortPass and LongPass ratings for this particular player
-AwayKep = [pos[C] == 1]Kep_1(64, 64, 50, C);
+AwayKep = [pos[C] == 1]AwayKepPass(64, 64, 50, C);
 
 // Here for the defender, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively 
 // The prob. to lose the ball for the attacking team's defender was calculated based on the defending team forward's player ratings 
 // In particular, the probability to lose the ball was a weighted combination of the standing tackle, sliding tackle, and interception FIFA player ratings of the forwards
-AwayDef = [pos[R ] == 1]Def(73, 71, 38, R) []
-		 [pos[CR] == 1]Def(68, 63, 38, CR) [] 
-		 [pos[CL] == 1]Def(68, 63, 38, CL) [] 
-		 [pos[L ] == 1]Def(72, 59, 38, L);
-
-HomeFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) [] 
-		 [pos[C ] == 1]For(75, 73, 66, 76, 75, C) [] 
-		 [pos[LR] == 1]For(73, 65, 65, 69, 75, LR);
+AwayDef = [pos[R ] == 1]AwayDefPass(73, 71, 38, R) []
+		 [pos[CR] == 1]AwayDefPass(68, 63, 38, CR) [] 
+		 [pos[CL] == 1]AwayDefPass(68, 63, 38, CL) [] 
+		 [pos[L ] == 1]AwayDefPass(72, 59, 38, L);
 
 // Similar to defender, midfielders and forwards have their own specific parameters
 // See their processes below for more information on what those parameters are
 // The prob. to lose for the attacking team's midfielders is based on the defending team's midfielders
 // The prob. to lose for the attacking team's forwards is based on the defending team's defender
-AwayMid = [pos[RL] == 1]Mid(79, 76, 74, 59, RL) [] 
-		 [pos[C ] == 1]Mid(83, 80, 57, 59, C) [] 
-		 [pos[LR] == 1]Mid(78, 73, 75, 59, LR);
+AwayMid = [pos[RL] == 1]AwayMidPass(79, 76, 74, 59, RL) [] 
+		 [pos[C ] == 1]AwayMidPass(83, 80, 57, 59, C) [] 
+		 [pos[LR] == 1]AwayMidPass(78, 73, 75, 59, LR);
+	
 		 
-HomeMid = [pos[RL] == 1]Mid(79, 76, 74, 59, RL) [] 
-		 [pos[C ] == 1]Mid(83, 80, 57, 59, C) [] 
-		 [pos[LR] == 1]Mid(78, 73, 75, 59, LR);
-		 
-AwayFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) [] 
-		 [pos[C ] == 1]For(75, 73, 66, 76, 75, C) [] 
-		 [pos[LR] == 1]For(73, 65, 65, 69, 75, LR);
+AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75, RL) [] 
+		 [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 75, C) [] 
+		 [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 75, LR);
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
 // Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
@@ -112,7 +105,20 @@ AwayFor = [pos[RL] == 1]For(77, 75, 74, 77, 75, RL) []
 // Note: gk_kicking only measures the goalkeeper's ability to kick the ball from
 // out of the hands or on the ground
 
-HomeKep = [pos[C] == 1]Kep_2(71, C);
+HomeKep = [pos[C] == 1]HomeKepPass(71, C);
+
+HomeDef = [pos[R ] == 1]HomeDefPass(73, 71, 38, R) []
+		 [pos[CR] == 1]HomeDefPass(68, 63, 38, CR) [] 
+		 [pos[CL] == 1]HomeDefPass(68, 63, 38, CL) [] 
+		 [pos[L ] == 1]HomeDefPass(72, 59, 38, L);
+		 
+HomeMid = [pos[RL] == 1]HomeMidPass(79, 76, 74, 59, RL) [] 
+		 [pos[C ] == 1]HomeMidPass(83, 80, 57, 59, C) [] 
+		 [pos[LR] == 1]HomeMidPass(78, 73, 75, 59, LR);
+
+HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, RL) [] 
+		 [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75, C) [] 
+		 [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75, LR);
 
 ///////////// Individual Positions /////////////
 // There is a guard to every action (e.g., shortPass) a player can take
@@ -184,7 +190,7 @@ HomeKepPass(attacking_short_pass, skill_long_pass, aggregated_intercept, positio
 	AtkDef -> [ i:short pass | j:long pass ] -> AtkMid
 	k: defending team forward's player ratings (weighted combination of the standing tackle, sliding tackle, and interception)
 */
-Home(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
+AwayDefPass(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		awayMidPos[position-2] == 1 ||
 		awayMidPos[position-1] == 1 ||
 		awayMidPos[position  ] == 1 ||
@@ -214,7 +220,7 @@ Home(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 	AtkMid -> [ i:short pass | j:long pass  | k:long shot ] -> AtkFor
 	l: defending team forward's midfilder ratings 
 */
-Mid(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, position) = [
+AwayMidPass(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, position) = [
 		awayForPos[position-2] == 1 ||
 		awayForPos[position-1] == 1 ||
 		awayForPos[position  ] == 1	||
@@ -250,7 +256,7 @@ Mid(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, p
 	AtkFor -> [ i:finish | j:long shot | k:volley | l:header ] -> Defkep
 	m: defending team defender player ratings 
 */
-For(i, j, k, l, m, position) = [
+AwayForPass(i, j, k, l, m, position) = [
 		homeKepPos[C] == 1
 	]	finish -> pcase {
 					i: shoot -> UpdatePos(position, FI); DefKep
@@ -281,7 +287,7 @@ For(i, j, k, l, m, position) = [
 /**
 	DefKep -> [ i:attemptSave ] -> Skip
 */
-Kep_2(i, position) = attemptSave -> pcase {
+HomeKepPass(i, position) = attemptSave -> pcase {
 								i: save{danger = 1;} -> Skip
 								100-i: concede -> Skip
 							};
