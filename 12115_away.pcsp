@@ -11,6 +11,10 @@
 #define RL 11;
 #define R 12;
 
+
+#define HOME_TEAM 1123;
+#define AWAY_TEAM 4435;
+
 // Grid of eligible positions that can receive the ball
 // This will change based on the previous position and the action taken
 // 1 means the position is eligible to receive the ball
@@ -48,6 +52,9 @@ var defDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)]; //D
 
 var defKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
 
+
+
+var ball_possession=AWAY_TEAM;
 
 /*
 atkFor -> finishing(defPos[-2, +2], average of the three defending stats) -> goal
@@ -121,6 +128,7 @@ DefKep = [pos[C] == 1]Kep_2(71, C);
 	aggregated_intercept: avg(intercept_score + 3 defending stat) by num_def_for
 	 num_def_for
 */
+
 Kep_1(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		atkDefPos[position-2] == 1 || 
 		atkDefPos[position-1] == 1 ||
@@ -128,7 +136,7 @@ Kep_1(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		atkDefPos[position+1] == 1 || 
 		atkDefPos[position+2] == 1
 	]	shortPass -> pcase {
-						attacking_short_pass: pass -> UpdatePos(position, SP); AtkDef // P(i) of making short pass
+						attacking_short_pass: pass -> UpdatePos(position, SP); [ball_possession == AWAY_TEAM] AtkDef [] [ball_possession == HOME_TEAM] DefFor// position(i) of making short pass
 						aggregated_intercept: intercepted{danger = 5;} -> openPos(); DefFor
 					}
 	[] // general choice
@@ -142,7 +150,7 @@ Kep_1(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		atkDefPos[position+5] == 1 ||
 		atkDefPos[position+6] == 1
 	]	longPass -> pcase {
-						skill_long_pass: 		pass -> UpdatePos(position, LP); AtkDef // P(i) of making long pass
+						skill_long_pass: 		pass -> UpdatePos(position, LP); AtkDef // position(i) of making long pass
 						aggregated_intercept: 	intercepted{danger = 5;} -> openPos(); DefFor
 					};
 
@@ -158,7 +166,7 @@ Def(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		atkMidPos[position+2] == 1
 	]	shortPass -> pcase {
 					attacking_short_pass: pass -> UpdatePos(position, SP); AtkMid
-					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefMid
+					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefFor
 				}
 	 [] // general choice
 	[
@@ -172,7 +180,7 @@ Def(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 		atkMidPos[position+6] == 1
 	]	longPass -> pcase {
 					skill_long_pass: pass -> UpdatePos(position, LP); AtkMid
-					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefMid
+					aggregated_intercept: tackled{danger = 4;} -> openPos(); DefFor
 				};
 
 
@@ -180,74 +188,74 @@ Def(attacking_short_pass, skill_long_pass, aggregated_intercept, position) = [
 	AtkMid -> [ i:short pass | j:long pass  | k:long shot ] -> AtkFor
 	l: defending team forward's midfilder ratings 
 */
-Mid(i, j, k, l, p) = [
-		atkForPos[p-2] == 1 ||
-		atkForPos[p-1] == 1 ||
-		atkForPos[p  ] == 1	||
-		atkForPos[p+1] == 1 ||
-		atkForPos[p+2] == 1
+Mid(attacking_short_pass, skill_long_pass, power_long_shot,aggregated_tackled, position) = [
+		atkForPos[position-2] == 1 ||
+		atkForPos[position-1] == 1 ||
+		atkForPos[position  ] == 1	||
+		atkForPos[position+1] == 1 ||
+		atkForPos[position+2] == 1
 	]	shortPass -> pcase {
-						i: pass -> UpdatePos(p, SP); AtkFor
-						l: tackled{danger = 3;} -> Skip
+						attacking_short_pass: pass -> UpdatePos(position, SP); AtkFor
+						aggregated_tackled: tackled{danger = 3;} -> openPos(); DefFor
 					}
 	 [] // general choice
 	[
-		 atkForPos[p-6] == 1 ||
-		 atkForPos[p-5] == 1 ||
-		 atkForPos[p-4] == 1 ||
-		 atkForPos[p-3] == 1 ||
-		 atkForPos[p+3] == 1 ||
-		 atkForPos[p+4] == 1 ||
-		 atkForPos[p+5] == 1 ||
-		 atkForPos[p+6] == 1
+		 atkForPos[position-6] == 1 ||
+		 atkForPos[position-5] == 1 ||
+		 atkForPos[position-4] == 1 ||
+		 atkForPos[position-3] == 1 ||
+		 atkForPos[position+3] == 1 ||
+		 atkForPos[position+4] == 1 ||
+		 atkForPos[position+5] == 1 ||
+		 atkForPos[position+6] == 1
 	]	 longPass -> pcase {
-						j: pass{inAir = true;} -> UpdatePos(p, LP); AtkFor
-						l: tackled{danger = 3;} -> Skip
+						skill_long_pass: pass{inAir = true;} -> UpdatePos(position, LP); AtkFor
+						aggregated_tackled: tackled{danger = 3;} -> Skip
 					}
 	 [] // general choice
 	[
 		 defKepPos[C] == 1
 	]	longShot -> pcase {
-						k: shoot -> UpdatePos(p, LS); DefKep
-						l: tackled{danger = 3;} -> Skip
+						power_long_shot: shoot -> UpdatePos(position, LS); DefKep
+						aggregated_tackled: tackled{danger = 3;} -> Skip
 					};
 
 /**
 	AtkFor -> [ i:finish | j:long shot | k:volley | l:header ] -> Defkep
 	m: defending team defender player ratings 
 */
-For(i, j, k, l, m, p) = [
+For(i, j, k, l, m, position) = [
 		defKepPos[C] == 1
 	]	finish -> pcase {
-					i: shoot -> UpdatePos(p, FI); DefKep
+					i: shoot -> UpdatePos(position, FI); DefKep
 					m: tackled{danger = 2;} -> Skip
 				}
 	 [] // general choice
 	 [
 	 	defKepPos[C] == 1
 	 ]	longShot -> pcase {
-					j: shoot -> UpdatePos(p, LS); DefKep
+					j: shoot -> UpdatePos(position, LS); DefKep
 					m: tackled{danger = 2;} -> Skip
 				}
 	 [] // general choice
 	 [
 	 	defKepPos[C] == 1 && inAir == true
 	 ]	volley -> pcase {
-					k: shoot -> UpdatePos(p, VO); DefKep
+					k: shoot -> UpdatePos(position, VO); DefKep
 					m: tackled{danger = 2;} -> Skip
 				}
 	 [] // general choice
 	 [
 	 	defKepPos[C] == 1 && inAir == true
 	 ]	header -> pcase {
-					l: shoot -> UpdatePos(p, HD); DefKep
+					l: shoot -> UpdatePos(position, HD); DefKep
 					m: tackled{danger = 2;} -> Skip
 				};
 
 /**
 	DefKep -> [ i:attemptSave ] -> Skip
 */
-Kep_2(i, p) = attemptSave -> pcase {
+Kep_2(i, position) = attemptSave -> pcase {
 								i: save{danger = 1;} -> Skip
 								100-i: concede -> Skip
 							};
@@ -285,38 +293,38 @@ SimulatePenaltyKick(
 */
 openPos() = setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
 
-UpdatePos(p, e) = case {
-	p == L: 
+UpdatePos(position, e) = case {
+	position == L: 
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}
-	p == LR:
+	position == LR:
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}
-	p == CL: 
+	position == CL: 
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 0; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 0; pos[RL] = 1; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}
-	p == C:
+	position == C:
 		case {
 			e == SP: {pos[L] = 0; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 1; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}	
-	p == CR:
+	position == CR:
 		case {
 			e == SP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
 			e == LP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 0; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}
-	p == RL:
+	position == RL:
 		case {
 			e == SP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
 			e == LP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
