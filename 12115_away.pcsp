@@ -1,4 +1,6 @@
-﻿// NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends 
+﻿// Please use the `epl_ratings_20152016.csv dataset` for consistency
+
+// NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends
 // A similar pcsp file will have to be generated from the home team POV to meaningfully compare which team has the higher chance of scoring during an attack
 
 // Position of players in grid
@@ -36,15 +38,19 @@ enum {SP, LP, LS, FI, VO, HD};
 // 1 means there is a player in that position
 // 0 means there is no player in that position
 // [-1 -1 -1 -1 -1 -1   L, LR, CL, C, CR, RL, R	   -1 -1 -1 -1 -1 -1]
-var awayKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
-var awayDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
-var awayMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
-var awayForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
 
-var homeKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
-var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
-var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+// Note: "left" and "right" can be ambiguous
+// assuming "left" and "right" are with reference to the goal keeper of each side
+
+var awayForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+var awayMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+var awayDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var awayKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
+
 var homeForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)];
+var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var homeKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
 
 var away_team_score = 0;
 var home_team_score = 0;
@@ -57,66 +63,301 @@ homeDef -> tackle [] foul(aggression) -> penalty_kick(awayFor[finishing] vs home
 */
 
 ///////////// AWAY TEAM PLAYERS (Attacking Team) /////////////
-// The parameters represent the probabilities specific to the player 
+// The parameters represent the probabilities specific to the player
 // The guard only allows eligible players to get the ball, see Individual Positions section for more info
 
 // For example keepers can only ShortPass or LongPass
 // Here 64, 64 represents the FIFA ShortPass and LongPass ratings for this particular player
-AwayKepAtk = [pos[C] == 1]AwayKepPass(64, 64, 50, C);
 
-AwayKepDef = AwayKepSave(71, C);
+// away keeper C is "Bradley Guzan"
+// attacking_short_passing=26
+// skill_long_passing=34
 
-// Here for the defender, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively 
-// The prob. to lose the ball for the attacking team's defender was calculated based on the defending team forward's player ratings 
+// home forward CL is "Callum Wilson" (https://sofifa.com/player/196978/callum-wilson/160002)
+// mentality_interceptions=40
+// defending_marking=20
+// defending_standing_tackle=39
+// defending_sliding_tackle=25
+
+// home forward CR is "Joshua King"
+// mentality_interceptions=36
+// defending_marking=22
+// defending_standing_tackle=27
+// defending_sliding_tackle=19
+
+// multiplier bonus when there are more defenders
+// 1 person = 100%
+// 2 person = 110%
+// 3 person = 120%
+// 4 person = 130%
+// ...
+
+// ((40+20+39+25 + 36+22+27+19) / 2 / 4) * 1.1 = 31.35
+// aggregated_defending = 31.35 = 31
+AwayKepAtk = [pos[C] == 1]AwayKepPass(26, 34, 31, C);
+
+// away keeper C is "Bradley Guzan"
+// gk_diving=80
+// gk_handling=76
+// gk_reflexes=81
+// gk_speed=48
+// gk_positioning=77
+// (80+76+81+48+77) / 5 = 72.4
+// aggregated_gk = 72.4 = 72
+AwayKepDef = AwayKepSave(72, C);
+
+// Here for the defender, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively
+// The prob. to lose the ball for the attacking team's defender was calculated based on the defending team forward's player ratings
 // In particular, the probability to lose the ball was a weighted combination of the standing tackle, sliding tackle, and interception FIFA player ratings of the forwards
-AwayDef = [pos[R ] == 1]AwayDefPass(73, 71, 38, R) []
-		 [pos[CR] == 1]AwayDefPass(68, 63, 38, CR) [] 
-		 [pos[CL] == 1]AwayDefPass(68, 63, 38, CL) [] 
-		 [pos[L ] == 1]AwayDefPass(72, 59, 38, L);
+
+// away defender R is "Leandro Bacuna"
+// attacking_short_passing=73
+// skill_long_passing=71
+
+// away defender CR is "Micah Richards"
+// attacking_short_passing=68
+// skill_long_passing=63
+
+// away defender CL is "Ciaran Clark"
+// attacking_short_passing=68
+// skill_long_passing=63
+
+// away defender L is "Jordan Amavi"
+// attacking_short_passing=72
+// skill_long_passing=59
+
+// home midfielder CR is "Dan Gosling"
+// mentality_interceptions=70
+// defending_marking=66
+// defending_standing_tackle=68
+// defending_sliding_tackle=68
+
+// home midfielder CL is "Andrew Surman"
+// mentality_interceptions=60
+// defending_marking=62
+// defending_standing_tackle=68
+// defending_sliding_tackle=62
+
+// home midfielder L is "Marc Pugh"
+// mentality_interceptions=37
+// defending_marking=30
+// defending_standing_tackle=44
+// defending_sliding_tackle=31
+
+// home midfielder R is "Matt Ritchie"
+// mentality_interceptions=46
+// defending_marking=56
+// defending_standing_tackle=57
+// defending_sliding_tackle=53
+
+// ((70+66+68+68 + 60+62+68+62 + 37+30+44+31 + 46+56+57+53) / 4 / 4) * 1.3 = 71.3375
+// aggregated_defending = 71.3375 = 71
+AwayDef = [pos[R ] == 1]AwayDefPass(73, 71, 71, R) []
+          [pos[CR] == 1]AwayDefPass(68, 63, 71, CR) []
+          [pos[CL] == 1]AwayDefPass(68, 63, 71, CL) []
+          [pos[L ] == 1]AwayDefPass(72, 59, 71, L);
 
 // Similar to defender, midfielders and forwards have their own specific parameters
 // See their processes below for more information on what those parameters are
 // The prob. to lose for the attacking team's midfielders is based on the defending team's midfielders
 // The prob. to lose for the attacking team's forwards is based on the defending team's defender
-AwayMid = [pos[RL] == 1]AwayMidPass(79, 76, 74, 59, RL) [] 
-		 [pos[C ] == 1]AwayMidPass(83, 80, 57, 59, C) [] 
-		 [pos[LR] == 1]AwayMidPass(78, 73, 75, 59, LR);
-	
-		 //TODO: pass the penalty stat
-AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 75,11,11,11, RL) [] 
-		 [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 75,11,11,11,C) [] 
-		 [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 75, 11, 11,11,LR);
 
-///////////// HOME TEAM PLAYERS (Defending Team) /////////////
-// Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
 
-// the defending keeper is "Artur Boruc"
+// away midfielder RL is "Jordan Veretout"
+// attacking_short_passing=79
+// skill_long_passing=76
+// power_long_shots=74
+
+// away midfielder C is "Ashley Westwood"
+// attacking_short_passing=83
+// skill_long_passing=80
+// power_long_shots=57
+
+// away midfielder RL is "Idrissa Gana Gueye"
+// attacking_short_passing=78
+// skill_long_passing=73
+// power_long_shots=75
+
+// use the same aggregated_defending stat = 71
+AwayMid = [pos[RL] == 1]AwayMidPass(79, 76, 74, 71, RL) []
+          [pos[C ] == 1]AwayMidPass(83, 80, 57, 71, C) []
+          [pos[LR] == 1]AwayMidPass(78, 73, 75, 71, LR);
+
+// home defender R is "Simon Francis"
+// mentality_interceptions=68
+// defending_marking=73
+// defending_standing_tackle=77
+// defending_sliding_tackle=70
+// :: mentality_aggression=73
+
+// home defender CR is "Tommy Elphick"
+// mentality_interceptions=61
+// defending_marking=76
+// defending_standing_tackle=74
+// defending_sliding_tackle=70
+// :: mentality_aggression=77
+
+// home defender CL is "Steve Cook"
+// mentality_interceptions=68
+// defending_marking=71
+// defending_standing_tackle=76
+// defending_sliding_tackle=71
+// :: mentality_aggression=74
+
+// home defender L is "Charlie Daniels"
+// mentality_interceptions=65
+// defending_marking=71
+// defending_standing_tackle=73
+// defending_sliding_tackle=72
+// :: mentality_aggression=51
+
+// ((68+73+77+70 + 61+76+74+70 + 68+71+76+71 + 65+71+73+72) / 4 / 4) * 1.3 = 92.3
+// aggregated_defending = 92.3 = 92
+
+// :: (73+77+74+51) / 4 = 68.75
+// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 18
+
+// home keeper is "Artur Boruc"
 // gk_diving=82
 // gk_handling=72
 // gk_reflexes=83
 // gk_speed=44
 // gk_positioning=74
-// average=71
+// (82+72+83+44+74) / 5 = 71
+// aggregated_gk = 71
+
+// away forward RL is "Jordan Ayew"
+// attacking_finishing=77
+// power_long_shots=75
+// attacking_volleys=74
+// attacking_heading_accuracy=77
+// :: mentality_penalties=74
+// :: skill_fk_accuracy=71
+// :: (74+71) / 2 = 72.5
+// :: => aggregated_penalty_kick = 72.5 = 73
+
+// away forward C is "Gabriel Imuetinyan Agbonlahor"
+// attacking_finishing=75
+// power_long_shots=73
+// attacking_volleys=66
+// attacking_heading_accuracy=76
+// :: mentality_penalties=66
+// :: skill_fk_accuracy=46
+// :: (66+46) / 2 = 56
+// :: => aggregated_penalty_kick = 56
+
+// away forward LR is "Scott Sinclair"
+// attacking_finishing=73
+// power_long_shots=65
+// attacking_volleys=65
+// attacking_heading_accuracy=69
+// :: mentality_penalties=83
+// :: skill_fk_accuracy=75
+// :: (83+75) / 2 = 79
+// :: => aggregated_penalty_kick = 79
+
+//                                   attacking_finishing
+//                                   |   power_long_shots
+//                                   |   |   attacking_volley
+//                                   |   |   |   attacking_heading_accuracy
+//                                   |   |   |   |   aggregated_defending
+//                                   |   |   |   |   |   aggregated_aggression
+//                                   |   |   |   |   |   |   aggregated_penalty_kick
+//                                   |   |   |   |   |   |   |   aggregated_gk
+//                                   |   |   |   |   |   |   |   |
+AwayFor = [pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 18, 73, 71, RL) []
+          [pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 18, 56, 71, C) []
+          [pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 18, 79, 71, LR);
+
+///////////// HOME TEAM PLAYERS (Defending Team) /////////////
+// Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
+
+// home keeper C is "Artur Boruc"
+// attacking_short_passing=25
+// skill_long_passing=34
+
+// away forward RL is "Jordan Ayew"
+// mentality_interceptions=33
+// defending_marking=23
+// defending_standing_tackle=22
+// defending_sliding_tackle=25
+
+// away forward C is "Gabriel Agbonlahor"
+// mentality_interceptions=20
+// defending_marking=48
+// defending_standing_tackle=32
+// defending_sliding_tackle=20
+
+// away forward LR is "Scott Sinclair"
+// mentality_interceptions=45
+// defending_marking=19
+// defending_standing_tackle=30
+// defending_sliding_tackle=28
+
+// ((33+23+22+25 + 20+48+32+20 + 45+19+30+28) / 3 / 4) * 1.2 = 34.5
+// aggregated_defending = 34.5 = 35
+HomeKepAtk = [pos[C] == 1]HomeKepPass(25, 34, 35, C);
+
+// home keeper C is "Artur Boruc"
+// gk_diving=82
+// gk_handling=72
+// gk_reflexes=83
+// gk_speed=44
+// gk_positioning=74
+// (82+72+83+44+74) / 5 = 71
 // Note: gk_kicking only measures the goalkeeper's ability to kick the ball from
 // out of the hands or on the ground
-
-HomeKepAtk = [pos[C] == 1]HomeKepPass(64, 64, 50, C);
-
 HomeKepDef = HomeKepSave(71, C);
 
-HomeDef = [pos[R ] == 1]HomeDefPass(73, 71, 38, R) []
-		 [pos[CR] == 1]HomeDefPass(68, 63, 38, CR) [] 
-		 [pos[CL] == 1]HomeDefPass(68, 63, 38, CL) [] 
-		 [pos[L ] == 1]HomeDefPass(72, 59, 38, L);
-		 
-HomeMid = [pos[RL] == 1]HomeMidPass(79, 76, 74, 59, RL) [] 
-		 [pos[C ] == 1]HomeMidPass(83, 80, 57, 59, C) [] 
-		 [pos[LR] == 1]HomeMidPass(78, 73, 75, 59, LR);
+// home defender R is "Simon Francis"
+// attacking_short_passing=70
+// skill_long_passing=64
+
+// home defender CR is "Tommy Elphick"
+// attacking_short_passing=65
+// skill_long_passing=50
+
+// home defender CL is "Steve Cook"
+// attacking_short_passing=68
+// skill_long_passing=60
+
+// home defender L is "Charlie Daniels"
+// attacking_short_passing=68
+// skill_long_passing=64
+
+// away midfielder RL is "Jordan Veretout"
+// mentality_interceptions=70
+// defending_marking=63
+// defending_standing_tackle=74
+// defending_sliding_tackle=63
+
+// away midfielder C is "Ashley Westwood"
+// mentality_interceptions=71
+// defending_marking=63
+// defending_standing_tackle=67
+// defending_sliding_tackle=64
+
+// away midfielder RL is "Idrissa Gana Gueye"
+// mentality_interceptions=83
+// defending_marking=76
+// defending_standing_tackle=79
+// defending_sliding_tackle=74
+
+// ((70+63+74+63 + 71+63+67+64 + 83+76+79+74) / 3 / 4) * 1.2 = 84.69999
+// aggregated_defending = 84.69999 = 85
+HomeDef = [pos[R ] == 1]HomeDefPass(70, 64, 85, R) []
+          [pos[CR] == 1]HomeDefPass(65, 50, 85, CR) []
+          [pos[CL] == 1]HomeDefPass(68, 60, 85, CL) []
+          [pos[L ] == 1]HomeDefPass(68, 64, 85, L);
+
+HomeMid = [pos[RL] == 1]HomeMidPass(79, 76, 74, 59, RL) []
+          [pos[C ] == 1]HomeMidPass(83, 80, 57, 59, C) []
+          [pos[LR] == 1]HomeMidPass(78, 73, 75, 59, LR);
 
 // Fill in stats
-HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 11, 11, 11,RL) [] 
-		 [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75,11,11,11,C) [] 
-		 [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75,11,11,11,LR);
+HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 11, 11, 11,RL) []
+          [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75,11,11,11,C) []
+          [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75,11,11,11,LR);
 
 
 ///////////// Individual Positions /////////////
@@ -139,10 +380,10 @@ AwayKepPass(
 	aggregated_defending,
 	position
 ) = [
-		awayDefPos[position-2] == 1 || 
+		awayDefPos[position-2] == 1 ||
 		awayDefPos[position-1] == 1 ||
-		awayDefPos[position  ] == 1 || 
-		awayDefPos[position+1] == 1 || 
+		awayDefPos[position  ] == 1 ||
+		awayDefPos[position+1] == 1 ||
 		awayDefPos[position+2] == 1
 	]	shortPass -> pcase {
 						attacking_short_passing: pass -> UpdatePos(position, SP); AwayDef
@@ -171,10 +412,10 @@ AwayKepPass(
 	aggregated_defending: avg(intercept_score + 3 defending stat) by num_home_for
 */
 HomeKepPass(attacking_short_passing, skill_long_passing, aggregated_defending, position) = [
-		homeDefPos[position-2] == 1 || 
+		homeDefPos[position-2] == 1 ||
 		homeDefPos[position-1] == 1 ||
-		homeDefPos[position  ] == 1 || 
-		homeDefPos[position+1] == 1 || 
+		homeDefPos[position  ] == 1 ||
+		homeDefPos[position+1] == 1 ||
 		homeDefPos[position+2] == 1
 	]	shortPass -> pcase {
 						attacking_short_passing: pass -> UpdatePos(position, SP); HomeDef
@@ -252,13 +493,13 @@ HomeDefPass(attacking_short_passing, skill_long_passing, aggregated_defending, p
 
 /**
 	AwayMid -> [ i:short pass | j:long pass  | k:long shot ] -> AwayFor
-	l: defending team forward's midfielder ratings 
+	l: defending team forward's midfielder ratings
 */
 AwayMidPass(
-	attacking_short_passing, 
-	skill_long_passing, 
+	attacking_short_passing,
+	skill_long_passing,
 	power_long_shots,
-	aggregated_defending, 
+	aggregated_defending,
 	position
 ) = [
 		awayForPos[position-2] == 1 ||
@@ -293,10 +534,10 @@ AwayMidPass(
 					};
 
 HomeMidPass(
-	attacking_short_passing, 
-	skill_long_passing, 
+	attacking_short_passing,
+	skill_long_passing,
 	power_long_shots,
-	aggregated_defending, 
+	aggregated_defending,
 	position
 ) = [
 		homeForPos[position-2] == 1 ||
@@ -332,15 +573,15 @@ HomeMidPass(
 
 /**
 	AwayFor -> [ i:finish | j:long shot | k:volley | attacking_heading_accuracy:header ] -> Defkep
-	aggregated_defending: defending team defender player ratings 
+	aggregated_defending: defending team defender player ratings
 */
 AwayForPass(
 	attacking_finishing,
-	power_long_shots, 
+	power_long_shots,
 	attacking_volleys,
 	attacking_heading_accuracy,
 	aggregated_defending,
-	aggregated_aggression, 
+	aggregated_aggression,
 
 	aggregated_penalty_kick,
 	aggregated_gk,
@@ -378,13 +619,13 @@ AwayForPass(
 				};
 
 HomeForPass(
-	attacking_finishing, 
-	power_long_shots, 
-	attacking_volleys, 
+	attacking_finishing,
+	power_long_shots,
+	attacking_volleys,
 	attacking_heading_accuracy,
-	aggregated_defending, 
-	aggregated_aggression, 	
-	
+	aggregated_defending,
+	aggregated_aggression,
+
 	aggregated_penalty_kick,
 	aggregated_gk,
 
@@ -447,7 +688,7 @@ HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
 //};
 
 // there is `gk_speed` but no `goalkeeping_speed`
-// => use the `gk_*` stats instead of the `goalkeeping_*` stats 
+// => use the `gk_*` stats instead of the `goalkeeping_*` stats
 AwaySimulatePenaltyKick(
 	aggregated_penalty_kick,
 	aggregated_gk
@@ -473,7 +714,7 @@ openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1
 	return: update the position eligible to receive the ball
 */
 UpdatePos(position, e) = incStep{step++} -> case {
-	position == L: 
+	position == L:
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
@@ -485,7 +726,7 @@ UpdatePos(position, e) = incStep{step++} -> case {
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
 		}
-	position == CL: 
+	position == CL:
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 0; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 0; pos[RL] = 1; pos[R] = 1;} -> Skip
@@ -496,7 +737,7 @@ UpdatePos(position, e) = incStep{step++} -> case {
 			e == SP: {pos[L] = 0; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 0;} -> Skip
 			e == LP: {pos[L] = 1; pos[LR] = 0; pos[CL] = 0; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 1;} -> Skip
 			default: {pos[L] = 0; pos[LR] = 0; pos[CL] = 0; pos[C] = 1; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
-		}	
+		}
 	position == CR:
 		case {
 			e == SP: {pos[L] = 0; pos[LR] = 0; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip
