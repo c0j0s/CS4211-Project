@@ -1,4 +1,4 @@
-﻿// Please use the `epl_ratings_20152016.csv dataset` for consistency
+// Please use the `epl_ratings_20152016.csv dataset` for consistency
 
 // NOTE: This will only produce probabilities of goal when the away team attacks while the home team defends
 // A similar pcsp file will have to be generated from the home team POV to meaningfully compare which team has the higher chance of scoring during an attack
@@ -350,14 +350,108 @@ HomeDef = [pos[R ] == 1]HomeDefPass(70, 64, 85, R) []
           [pos[CL] == 1]HomeDefPass(68, 60, 85, CL) []
           [pos[L ] == 1]HomeDefPass(68, 64, 85, L);
 
-HomeMid = [pos[RL] == 1]HomeMidPass(79, 76, 74, 59, RL) []
-          [pos[C ] == 1]HomeMidPass(83, 80, 57, 59, C) []
-          [pos[LR] == 1]HomeMidPass(78, 73, 75, 59, LR);
+// home midfielder R is "Matt Ritchie"
+// attacking_short_passing=69
+// skill_long_passing=66
+// power_long_shots=74
 
-// Fill in stats
-HomeFor = [pos[RL] == 1]HomeForPass(77, 75, 74, 77, 75, 11, 11, 11,RL) []
-          [pos[C ] == 1]HomeForPass(75, 73, 66, 76, 75,11,11,11,C) []
-          [pos[LR] == 1]HomeForPass(73, 65, 65, 69, 75,11,11,11,LR);
+// home midfielder CR is "Dan Gosling"
+// attacking_short_passing=73
+// skill_long_passing=71
+// power_long_shots=73
+
+// home midfielder CL is "Andrew Surman"
+// attacking_short_passing=82
+// skill_long_passing=76
+// power_long_shots=65
+
+// home midfielder L is "Marc Pugh"
+// attacking_short_passing=68
+// skill_long_passing=59
+// power_long_shots=66
+
+// use the same aggregated_defending stat = 85
+HomeMid = [pos[R ] == 1]HomeMidPass(69, 66, 74, 85, R) []
+          [pos[CR] == 1]HomeMidPass(73, 71, 73, 85, CR) []
+          [pos[CL] == 1]HomeMidPass(82, 76, 65, 85, CL) []
+          [pos[L ] == 1]HomeMidPass(68, 59, 66, 85, L);
+
+// away keeper C is "Bradley Guzan"
+// gk_diving=80
+// gk_handling=76
+// gk_reflexes=81
+// gk_speed=48
+// gk_positioning=77
+// (80+76+81+48+77) / 5 = 72.4
+// aggregated_gk = 72.4 = 72
+
+// away defender is "Leandro Bacuna"
+// mentality_interceptions=63
+// defending_marking=72
+// defending_standing_tackle=70
+// defending_sliding_tackle=70
+// :: mentality_aggression=72
+
+// away defender is "Micah Richards"
+// mentality_interceptions=75
+// defending_marking=77
+// defending_standing_tackle=78
+// defending_sliding_tackle=80
+// :: mentality_aggression=85
+
+// away defender is "Ciaran Clark"
+// mentality_interceptions=79
+// defending_marking=77
+// defending_standing_tackle=81
+// defending_sliding_tackle=81
+// :: mentality_aggression=82
+
+// away defender is "Jordan Amavi"
+// mentality_interceptions=75
+// defending_marking=75
+// defending_standing_tackle=73
+// defending_sliding_tackle=77
+// :: mentality_aggression=66
+
+// ((63+72+70+70 + 75+77+78+80 + 79+77+81+81 + 75+75+73+77) / 4 / 4) = 75.1875
+// aggregated_defending = 75.1875 = 75
+
+// :: (72+85+82+66) / 4 = 76.25
+// :: aggregated_aggression = 76.25 * (1/4) = 19.0625 = 19
+
+// ============================================================================
+
+// home forward CR is "Joshua King"
+// attacking_finishing=65
+// power_long_shots=58
+// attacking_volleys=67
+// attacking_heading_accuracy=53
+// :: mentality_penalties=62
+// :: skill_fk_accuracy=42
+// :: (62+42) / 2 = 52
+// :: => aggregated_penalty_kick = 52
+
+// home forward CL is "Callum Wilson" (https://sofifa.com/player/196978/callum-wilson/160002)
+// attacking_finishing=79
+// power_long_shots=64
+// attacking_volleys=65
+// attacking_heading_accuracy=62
+// :: mentality_penalties=75
+// :: skill_fk_accuracy=45
+// :: (75+45) / 2 = 60
+// :: => aggregated_penalty_kick = 60
+
+//                                   attacking_finishing
+//                                   |   power_long_shots
+//                                   |   |   attacking_volley
+//                                   |   |   |   attacking_heading_accuracy
+//                                   |   |   |   |   aggregated_defending
+//                                   |   |   |   |   |   aggregated_aggression
+//                                   |   |   |   |   |   |   aggregated_penalty_kick
+//                                   |   |   |   |   |   |   |   aggregated_gk
+//                                   |   |   |   |   |   |   |   |
+HomeFor = [pos[CR] == 1]HomeForPass(65, 58, 67, 53, 75, 19, 52, 72, CR) []
+          [pos[CL] == 1]HomeForPass(79, 64, 65, 62, 75, 19, 60, 72, CL);
 
 
 ///////////// Individual Positions /////////////
