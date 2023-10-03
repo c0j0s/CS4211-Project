@@ -13,8 +13,8 @@
 #define RL 11;
 #define R 12;
 
-// PAT verification should finish in about 3 seconds
-#define MAX_STEP 10;
+// PAT verification should finish in about 10 seconds
+#define MAX_STEP 20;
 
 // Grid of eligible positions that can receive the ball
 // This will change based on the previous position and the action taken
@@ -71,6 +71,12 @@ homeDef -> tackle [] foul(aggression) -> penalty_kick(awayFor[finishing] vs home
 
 // ============================================================================
 
+StartGame = coin_toss -> pcase {
+	1: away_team_starts -> openPos(); AwayMid
+	1: home_team_starts -> openPos(); HomeMid
+};
+
+// ============================================================================
 // away keeper C is "Bradley Guzan"
 // attacking_short_passing=26
 // skill_long_passing=34
@@ -882,18 +888,14 @@ UpdatePos(position, e) = incStep{step++} -> case {
 // #define Goal2 danger <= 2;
 // #define Goal3 danger <= 3;
 // #define Goal4 danger <= 4;
-#define away_team_wins away_team_score == 1 && step < MAX_STEP;
-#define home_team_wins home_team_score == 1 && step < MAX_STEP;
-#define game_ends_in_draw away_team_score == 0 && home_team_score == 0 && step < MAX_STEP;
+#define away_team_wins away_team_score > home_team_score && step < MAX_STEP;
+#define home_team_wins away_team_score < home_team_score && step < MAX_STEP;
+#define game_ends_in_draw away_team_score == home_team_score && step < MAX_STEP;
 
-#assert AwayKepAtk deadlockfree;
-#assert HomeKepAtk deadlockfree;
-
-#assert AwayKepAtk reaches away_team_wins with prob;
-#assert HomeKepAtk reaches home_team_wins with prob;
-
-#assert AwayKepAtk |= G game_ends_in_draw with prob;
-#assert HomeKepAtk |= G game_ends_in_draw with prob;
+#assert StartGame deadlockfree;
+#assert StartGame reaches away_team_wins with prob;
+#assert StartGame reaches home_team_wins with prob;
+#assert StartGame |= G game_ends_in_draw with prob;
 
 // G == Globally: has to hold on the entire subsequent path
 // F == Finally: eventually has to hold (somewhere on the subsequent path)
