@@ -13,7 +13,7 @@
 #define RL 11;
 #define R 12;
 
-// PAT verification should finish in about 10 seconds
+// PAT verification should finish in about 30 seconds
 #define MAX_STEP 20;
 
 // Grid of eligible positions that can receive the ball
