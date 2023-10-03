@@ -895,7 +895,7 @@ UpdatePos(position, e) = incStep{step++} -> case {
 #assert StartGame deadlockfree;
 #assert StartGame reaches away_team_wins with prob;
 #assert StartGame reaches home_team_wins with prob;
-#assert StartGame |= G game_ends_in_draw with prob;
+#assert StartGame |= F G game_ends_in_draw with prob;
 
 // G == Globally: has to hold on the entire subsequent path
 // F == Finally: eventually has to hold (somewhere on the subsequent path)
