@@ -1,3 +1,8 @@
 # CS4211-Project
-### Note
-Remember to stop codespace after every session, free 120 core hours/month = 60 man hr/month.
+
+### Python setup
+```bash
+$ python3 -m venv .venv
+$ python3 -m venv .venv
+$ pip install -r requirements.txt
+```
