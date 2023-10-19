@@ -148,10 +148,18 @@ def get_GenericKepPass_parameters(
     opponent_df_sofifa_ids: pd.DataFrame,
 ):
     """
-    Returns a variant of `"26, 34, 31, C"`
+    Returns a variant of
+
+    ```python
+    [
+        "26, 34, 31, C"
+    ]
+    ```
 
     See line 106 of `12115_away.pcsp`
     """
+    results: list[str] = []
+
     our_keeper_sofifa_id = our_df_sofifa_ids.at["kep", "C"]
     opponent_forward_sofifa_ids = opponent_df_sofifa_ids.loc["for"].to_list()
 
@@ -171,7 +179,9 @@ def get_GenericKepPass_parameters(
         aggregated_defending,
         position,
     )
-    return params_string
+
+    results.append(params_string)
+    return results
 
 
 def get_KepSave_parameters(
@@ -180,13 +190,21 @@ def get_KepSave_parameters(
     our_team: Literal["away", "home"],
 ):
     """
-    Returns a variant of `"72, C"`
+    Returns a variant of
+
+    ```python
+    [
+        "72, C"
+    ]
+    ```
 
     See line 117 of `12115_away.pcsp`
     """
     if our_team != "away" and our_team != "home":
         raise Exception(f"Unknown team={our_team}")
 
+    results: list[str] = []
+    
     df_sofifa_ids = away_df_sofifa_ids if our_team == "away" else home_df_sofifa_ids
     keeper_sofifa_id = df_sofifa_ids.at["kep", "C"]
     keeper_stats = ratings.loc[keeper_sofifa_id]
@@ -213,7 +231,9 @@ def get_KepSave_parameters(
         aggregated_gk,
         position,
     )
-    return params_string
+
+    results.append(params_string)
+    return results
 
 
 # =============================================================================
