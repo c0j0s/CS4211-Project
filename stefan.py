@@ -337,6 +337,33 @@ def get_average(lst: list[int]):
     return round(sum(lst) / len(lst))
 
 
+def get_aggregated_defending(sofifa_ids: list[int]):
+    """
+    Input: `[111, 0, 222, 0, 333, 0, 444]`
+
+    Output: `79`
+    """
+
+    sofifa_ids = remove_all_zeros(sofifa_ids)
+
+    all_defending_stats = []
+    for sofifa_id in sofifa_ids:
+        opponent_stats = ratings.loc[sofifa_id]
+        all_defending_stats.append(int(opponent_stats["mentality_interceptions"]))
+        all_defending_stats.append(int(opponent_stats["defending_marking"]))
+        all_defending_stats.append(int(opponent_stats["defending_standing_tackle"]))
+        all_defending_stats.append(int(opponent_stats["defending_sliding_tackle"]))
+
+    aggregated_defending = get_average(all_defending_stats)
+
+    number_of_defenders = len(sofifa_ids)
+    aggregated_defending = apply_defender_multiplier_bonus(
+        aggregated_defending, number_of_defenders
+    )
+
+    return aggregated_defending
+
+
 def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
     """
     - 1 defender = 100%
