@@ -153,37 +153,7 @@ def get_GenericKepPass_parameters(
     our_keeper_sofifa_id = our_df_sofifa_ids.at["kep", "C"]
     opponent_forward_sofifa_ids = opponent_df_sofifa_ids.loc["for"].to_list()
 
-    opponent_forward_sofifa_ids = remove_all_zeros(opponent_forward_sofifa_ids)
-
-    # find the sum of these stats for opponent forward players
-    # - mentality_interceptions
-    # - defending_marking
-    # - defending_standing_tackle
-    # - defending_sliding_tackle
-
-    all_defending_stats = []
-    for opponent_forward_sofifa_id in opponent_forward_sofifa_ids:
-        if opponent_forward_sofifa_id == 0:
-            continue
-
-        opponent_forward_stats = ratings.loc[opponent_forward_sofifa_id]
-        all_defending_stats.append(
-            int(opponent_forward_stats["mentality_interceptions"])
-        )
-        all_defending_stats.append(int(opponent_forward_stats["defending_marking"]))
-        all_defending_stats.append(
-            int(opponent_forward_stats["defending_standing_tackle"])
-        )
-        all_defending_stats.append(
-            int(opponent_forward_stats["defending_sliding_tackle"])
-        )
-
-    aggregated_defending = get_average(all_defending_stats)
-
-    number_of_defenders = len(opponent_forward_sofifa_ids)
-    aggregated_defending = apply_defender_multiplier_bonus(
-        aggregated_defending, number_of_defenders
-    )
+    aggregated_defending = get_aggregated_defending(opponent_forward_sofifa_ids)
 
     our_keeper_stats = ratings.loc[our_keeper_sofifa_id]
     our_keeper_stats_attacking_short_passing = int(
