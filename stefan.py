@@ -4,6 +4,8 @@ from typing import *
 
 CHECK_MAX_STEP = "[step >= MAX_STEP]game_ends -> Skip []"
 
+POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
+
 ratings = pd.read_csv("./Datasets/ratings/epl_ratings_20152016.csv")
 matches = pd.read_csv("./Datasets/matches/epl_matches_20152016.csv")
 
