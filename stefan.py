@@ -46,6 +46,11 @@ def main():
     print(f"z = {z}")
     z = get_KepSave_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
+    
+    z = get_For_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
+    print(f"z = {z}")
+    z = get_For_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
+    print(f"z = {z}")
 
 
 def get_df_sofifa_ids(match: pd.Series, team: Literal["away", "home"]):
@@ -370,7 +375,39 @@ def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
     multiplier = 100
     multiplier += (number_of_defenders - 1) * 10
     multiplier /= 100
-    return round(stat * multiplier)
+    return int(round(stat * multiplier))
+
+def get_aggregated_gk(sofifa_id: int):
+    all_gk_stats = []
+    gk_stats = ratings.loc[sofifa_id]
+    all_gk_stats.append(
+        int(gk_stats["gk_diving"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_handling"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_reflexes"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_speed"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_positioning"])
+    )
+    
+    return get_average(all_gk_stats)
+
+def get_aggregated_aggression(sofifa_ids: List[int]):
+    all_aggression_stats = []
+    for sofifa_id in sofifa_ids:
+        if sofifa_id == 0:
+            continue
+        
+        opponent_defender_stats = ratings.loc[sofifa_id]
+        all_aggression_stats.append(int(opponent_defender_stats["mentality_aggression"]))
+    
+    return int(round(get_average(all_aggression_stats)/4, 0))
 
 
 def convert_formation_to_formation_numbers(formation: str):
@@ -433,10 +470,6 @@ def get_pos_array_string_from_df_sofifa_ids(
     return pos_array_string
 
 
-if __name__ == "__main__":
-    main()
-
-
 # =============================================================================
 # stefan defender
 # =============================================================================
@@ -484,7 +517,7 @@ def get_GenericFor_parameters(
     opponent_defender_sofifa_ids = opponent_df_sofifa_ids.loc["def"].to_list()
     opponent_defender_sofifa_ids = remove_all_zeros(opponent_defender_sofifa_ids)
     
-    opponent_aggregated_defending = 92 #to get from method
+    opponent_aggregated_defending = get_aggregated_defending(opponent_defender_sofifa_ids)
     opponent_aggregated_aggression = get_aggregated_aggression(opponent_defender_sofifa_ids)
     
     our_forward_stats_combined = []
@@ -499,7 +532,7 @@ def get_GenericFor_parameters(
             our_forward_atk_head = int(our_forward_stats["attacking_heading_accuracy"])
             our_forward_ment_pen = int(our_forward_stats["mentality_penalties"])
             our_forward_fk_accuracy = int(our_forward_stats["skill_fk_accuracy"])
-            our_forward_aggregated_penalty_kick = round((our_forward_ment_pen + our_forward_fk_accuracy)/2, 0)
+            our_forward_aggregated_penalty_kick = int(round((our_forward_ment_pen + our_forward_fk_accuracy)/2, 0))
             
             params_string = convert_parameters_to_parameters_string(
                 our_forward_atk_fnsh,
@@ -516,35 +549,10 @@ def get_GenericFor_parameters(
             our_forward_stats_combined.append(params_string)
     
     return our_forward_stats_combined
-        
-def get_aggregated_gk(sofifa_id: int):
-    all_gk_stats = []
-    gk_stats = ratings.loc[sofifa_id]
-    all_gk_stats.append(
-        int(gk_stats["gk_diving"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_handling"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_reflexes"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_speed"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_positioning"])
-    )
-    
-    return get_average(all_gk_stats)
 
-def get_aggregated_aggression(opponent_defender_sofifa_ids: int):
-    all_aggression_stats = []
-    for opponent_defender_sofifa_id in opponent_defender_sofifa_ids:
-        if opponent_defender_sofifa_id == 0:
-            continue
+if __name__ == "__main__":
+    main()
+
+
+
         
-        opponent_defender_stats = ratings.loc[opponent_defender_sofifa_id]
-        all_aggression_stats.append(int(opponent_defender_stats["mentality_aggression"]))
-    
-    return round(get_average(all_aggression_stats)/4, 0)
