@@ -4,6 +4,8 @@ from typing import *
 
 CHECK_MAX_STEP = "[step >= MAX_STEP]game_ends -> Skip []"
 
+POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
+
 ratings = pd.read_csv("./Datasets/ratings/epl_ratings_20152016.csv")
 matches = pd.read_csv("./Datasets/matches/epl_matches_20152016.csv")
 
@@ -146,44 +148,22 @@ def get_GenericKepPass_parameters(
     opponent_df_sofifa_ids: pd.DataFrame,
 ):
     """
-    Returns a variant of `"26, 34, 31, C"`
+    Returns a variant of
+
+    ```python
+    [
+        "26, 34, 31, C"
+    ]
+    ```
 
     See line 106 of `12115_away.pcsp`
     """
+    results: list[str] = []
+
     our_keeper_sofifa_id = our_df_sofifa_ids.at["kep", "C"]
     opponent_forward_sofifa_ids = opponent_df_sofifa_ids.loc["for"].to_list()
 
-    opponent_forward_sofifa_ids = remove_all_zeros(opponent_forward_sofifa_ids)
-
-    # find the sum of these stats for opponent forward players
-    # - mentality_interceptions
-    # - defending_marking
-    # - defending_standing_tackle
-    # - defending_sliding_tackle
-
-    all_defending_stats = []
-    for opponent_forward_sofifa_id in opponent_forward_sofifa_ids:
-        if opponent_forward_sofifa_id == 0:
-            continue
-
-        opponent_forward_stats = ratings.loc[opponent_forward_sofifa_id]
-        all_defending_stats.append(
-            int(opponent_forward_stats["mentality_interceptions"])
-        )
-        all_defending_stats.append(int(opponent_forward_stats["defending_marking"]))
-        all_defending_stats.append(
-            int(opponent_forward_stats["defending_standing_tackle"])
-        )
-        all_defending_stats.append(
-            int(opponent_forward_stats["defending_sliding_tackle"])
-        )
-
-    aggregated_defending = get_average(all_defending_stats)
-
-    number_of_defenders = len(opponent_forward_sofifa_ids)
-    aggregated_defending = apply_defender_multiplier_bonus(
-        aggregated_defending, number_of_defenders
-    )
+    aggregated_defending = get_aggregated_defending(opponent_forward_sofifa_ids)
 
     our_keeper_stats = ratings.loc[our_keeper_sofifa_id]
     our_keeper_stats_attacking_short_passing = int(
@@ -199,7 +179,9 @@ def get_GenericKepPass_parameters(
         aggregated_defending,
         position,
     )
-    return params_string
+
+    results.append(params_string)
+    return results
 
 
 def get_KepSave_parameters(
@@ -208,13 +190,21 @@ def get_KepSave_parameters(
     our_team: Literal["away", "home"],
 ):
     """
-    Returns a variant of `"72, C"`
+    Returns a variant of
+
+    ```python
+    [
+        "72, C"
+    ]
+    ```
 
     See line 117 of `12115_away.pcsp`
     """
     if our_team != "away" and our_team != "home":
         raise Exception(f"Unknown team={our_team}")
 
+    results: list[str] = []
+    
     df_sofifa_ids = away_df_sofifa_ids if our_team == "away" else home_df_sofifa_ids
     keeper_sofifa_id = df_sofifa_ids.at["kep", "C"]
     keeper_stats = ratings.loc[keeper_sofifa_id]
@@ -241,7 +231,9 @@ def get_KepSave_parameters(
         aggregated_gk,
         position,
     )
-    return params_string
+
+    results.append(params_string)
+    return results
 
 
 # =============================================================================
@@ -335,6 +327,33 @@ def get_average(lst: list[int]):
     Returns the mean of all values in the list `lst` (rounded)
     """
     return round(sum(lst) / len(lst))
+
+
+def get_aggregated_defending(sofifa_ids: list[int]):
+    """
+    Input: `[111, 0, 222, 0, 333, 0, 444]`
+
+    Output: `79`
+    """
+
+    sofifa_ids = remove_all_zeros(sofifa_ids)
+
+    all_defending_stats = []
+    for sofifa_id in sofifa_ids:
+        opponent_stats = ratings.loc[sofifa_id]
+        all_defending_stats.append(int(opponent_stats["mentality_interceptions"]))
+        all_defending_stats.append(int(opponent_stats["defending_marking"]))
+        all_defending_stats.append(int(opponent_stats["defending_standing_tackle"]))
+        all_defending_stats.append(int(opponent_stats["defending_sliding_tackle"]))
+
+    aggregated_defending = get_average(all_defending_stats)
+
+    number_of_defenders = len(sofifa_ids)
+    aggregated_defending = apply_defender_multiplier_bonus(
+        aggregated_defending, number_of_defenders
+    )
+
+    return aggregated_defending
 
 
 def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
