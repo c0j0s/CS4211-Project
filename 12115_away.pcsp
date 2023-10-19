@@ -275,15 +275,15 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 // :: (83+75) / 2 = 79
 // :: => aggregated_penalty_kick = 79
 
-//                                   attacking_finishing
-//                                   |   power_long_shots
-//                                   |   |   attacking_volley
-//                                   |   |   |   attacking_heading_accuracy
-//                                   |   |   |   |   aggregated_defending
-//                                   |   |   |   |   |   aggregated_aggression
-//                                   |   |   |   |   |   |   aggregated_penalty_kick
-//                                   |   |   |   |   |   |   |   aggregated_gk
-//                                   |   |   |   |   |   |   |   |
+//					                                     attacking_finishing
+//					                                     |   power_long_shots
+//					                                     |   |   attacking_volley
+//					                                     |   |   |   attacking_heading_accuracy
+//					                                     |   |   |   |   aggregated_defending
+//					                                     |   |   |   |   |   aggregated_aggression
+//					                                     |   |   |   |   |   |   aggregated_penalty_kick
+//					                                     |   |   |   |   |   |   |   aggregated_gk
+//					                                     |   |   |   |   |   |   |   |
 AwayFor = [step >= MAX_STEP]game_ends -> Skip []
           [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 18, 73, 71, RL) []
           [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 18, 56, 71, C) []
@@ -469,15 +469,15 @@ HomeMid = [step >= MAX_STEP]game_ends -> Skip []
 // :: (75+45) / 2 = 60
 // :: => aggregated_penalty_kick = 60
 
-//                                   attacking_finishing
-//                                   |   power_long_shots
-//                                   |   |   attacking_volley
-//                                   |   |   |   attacking_heading_accuracy
-//                                   |   |   |   |   aggregated_defending
-//                                   |   |   |   |   |   aggregated_aggression
-//                                   |   |   |   |   |   |   aggregated_penalty_kick
-//                                   |   |   |   |   |   |   |   aggregated_gk
-//                                   |   |   |   |   |   |   |   |
+//                                   					attacking_finishing
+//                                   					|   power_long_shots
+//                                   					|   |   attacking_volley
+//                                   					|   |   |   attacking_heading_accuracy
+//                                   					|   |   |   |   aggregated_defending
+//                                   					|   |   |   |   |   aggregated_aggression
+//                                   					|   |   |   |   |   |   aggregated_penalty_kick
+//          					     					|   |   |   |   |   |   |   aggregated_gk
+//                                   					|   |   |   |   |   |   |   |
 HomeFor = [step >= MAX_STEP]game_ends -> Skip []
           [step <  MAX_STEP && pos[CR] == 1]HomeForPass(65, 58, 67, 53, 75, 19, 52, 72, CR) []
           [step <  MAX_STEP && pos[CL] == 1]HomeForPass(79, 64, 65, 62, 75, 19, 60, 72, CL);

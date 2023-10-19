@@ -431,3 +431,101 @@ if __name__ == "__main__":
 # =============================================================================
 # branda forward
 # =============================================================================
+def get_For_parameters(
+    away_df_sofifa_ids: pd.DataFrame,
+    home_df_sofifa_ids: pd.DataFrame,
+    our_team: Literal["away", "home"],
+):
+    """ Wrapper around `get_GenericFor_parameters()` to pass in the correct
+    "our_team" and "opponent_team" information
+    """
+    if our_team == "away":
+        return get_GenericFor_parameters(away_df_sofifa_ids, home_df_sofifa_ids)
+    
+    if our_team == "home":
+        return get_GenericFor_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
+    
+    raise Exception(f"Unknown team={our_team}")
+
+def get_GenericFor_parameters(
+    our_df_sofifa_ids: pd.DataFrame,
+    opponent_df_sofifa_ids: pd.DataFrame,
+):
+    """
+    Returns an array of a variant of `"77, 75, 74, 77, 92, 18, 73, 71, RL"`
+    
+    See line 287 of `12115_away.pcsp`
+    """
+    
+    positions = ["L", "LR", "CL", "C", "CR", "RL", "R"]
+    
+    opponent_keeper_sofifa_id = opponent_df_sofifa_ids.at["kep", "C"]
+    opponent_aggregated_gk = get_aggregated_gk(opponent_keeper_sofifa_id)
+    
+    opponent_defender_sofifa_ids = opponent_df_sofifa_ids.loc["def"].to_list()
+    opponent_defender_sofifa_ids = remove_all_zeros(opponent_defender_sofifa_ids)
+    
+    opponent_aggregated_defending = 92 #to get from method
+    opponent_aggregated_aggression = get_aggregated_aggression(opponent_defender_sofifa_ids)
+    
+    our_forward_stats_combined = []
+    
+    for i in range(7):
+        our_forward_sofifa_id = our_df_sofifa_ids.at["for", positions[i]]
+        if (our_forward_sofifa_id != 0):
+            our_forward_stats = ratings.loc[our_forward_sofifa_id]
+            our_forward_atk_fnsh = int(our_forward_stats["attacking_finishing"])
+            our_forward_pwr_ls = int(our_forward_stats["power_long_shots"])
+            our_forward_atk_volleys = int(our_forward_stats["attacking_volleys"])
+            our_forward_atk_head = int(our_forward_stats["attacking_heading_accuracy"])
+            our_forward_ment_pen = int(our_forward_stats["mentality_penalties"])
+            our_forward_fk_accuracy = int(our_forward_stats["skill_fk_accuracy"])
+            our_forward_aggregated_penalty_kick = round((our_forward_ment_pen + our_forward_fk_accuracy)/2, 0)
+            
+            params_string = convert_parameters_to_parameters_string(
+                our_forward_atk_fnsh,
+                our_forward_pwr_ls,
+                our_forward_atk_volleys,
+                our_forward_atk_head,
+                opponent_aggregated_defending,
+                opponent_aggregated_aggression,
+                our_forward_aggregated_penalty_kick,
+                opponent_aggregated_gk,
+                positions[i],
+            )
+            
+            our_forward_stats_combined.append(params_string)
+    
+    return our_forward_stats_combined
+        
+def get_aggregated_gk(sofifa_id: int):
+    all_gk_stats = []
+    gk_stats = ratings.loc[sofifa_id]
+    all_gk_stats.append(
+        int(gk_stats["gk_diving"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_handling"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_reflexes"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_speed"])
+    )
+    all_gk_stats.append(
+        int(gk_stats["gk_positioning"])
+    )
+    
+    return get_average(all_gk_stats)
+
+def get_aggregated_aggression(opponent_defender_sofifa_ids: int):
+    all_aggression_stats = []
+    for opponent_defender_sofifa_id in opponent_defender_sofifa_ids:
+        if opponent_defender_sofifa_id == 0:
+            continue
+        
+        opponent_defender_stats = ratings.loc[opponent_defender_sofifa_id]
+        all_aggression_stats.append(int(opponent_defender_stats["mentality_aggression"]))
+    
+    return round(get_average(all_aggression_stats)/4, 0)
