@@ -334,9 +334,9 @@ def get_positions_from_formation_number(formation_number: int):
 
 def get_average(lst: list[int]):
     """
-    Returns the mean of all values in the list `lst` (rounded)
+    Returns the mean of all values in the list `lst`
     """
-    return round(sum(lst) / len(lst))
+    return sum(lst) / len(lst)
 
 
 def get_aggregated_defending(sofifa_ids: list[int]):
