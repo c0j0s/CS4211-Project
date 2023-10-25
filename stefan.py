@@ -57,6 +57,11 @@ def main():
     z = get_For_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
 
+    z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
+    print(f"z = {z}")
+    z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
+    print(f"z = {z}")
+
 
 def get_df_sofifa_ids(match: pd.Series, team: Literal["away", "home"]):
     """
@@ -495,6 +500,75 @@ def get_pos_array_string_from_df_sofifa_ids(
 # =============================================================================
 # stefan defender
 # =============================================================================
+
+
+def get_DefPass_parameters(
+    away_df_sofifa_ids: pd.DataFrame,
+    home_df_sofifa_ids: pd.DataFrame,
+    our_team: Literal["away", "home"],
+):
+    """
+    Wrapper around `get_GenericDefPass_parameters()` to pass in the correct
+    "our_team" and "opponent_team" information
+    """
+
+    if our_team == "away":
+        return get_GenericDefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids)
+
+    if our_team == "home":
+        return get_GenericDefPass_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
+
+    raise Exception(f"Unknown team={our_team}")
+
+
+def get_GenericDefPass_parameters(
+    our_df_sofifa_ids: pd.DataFrame,
+    opponent_df_sofifa_ids: pd.DataFrame,
+):
+    """
+    Returns a variant of
+
+    ```python
+    [
+        "73, 71, 71, R",
+        "68, 63, 71, CR",
+        ...
+    ]
+    ```
+
+    See line 170 of `12115_away.pcsp`
+    """
+    results: list[str] = []
+
+    our_defender_sofifa_ids = our_df_sofifa_ids.loc["def"]
+    opponent_midfielder_sofifa_ids = opponent_df_sofifa_ids.loc["mid"].to_list()
+
+    aggregated_defending = get_aggregated_defending(opponent_midfielder_sofifa_ids)
+
+    for position in POSITIONS:
+        our_defender_sofifa_id = our_defender_sofifa_ids[position]
+
+        if our_defender_sofifa_id == 0:
+            continue
+
+        our_defender_stats = ratings.loc[our_defender_sofifa_id]
+        our_defender_stats_attacking_short_passing = int(
+            our_defender_stats["attacking_short_passing"]
+        )
+        our_defender_stats_skill_long_passing = int(
+            our_defender_stats["skill_long_passing"]
+        )
+
+        params_string = convert_parameters_to_parameters_string(
+            our_defender_stats_attacking_short_passing,
+            our_defender_stats_skill_long_passing,
+            aggregated_defending,
+            position,
+        )
+
+        results.append(params_string)
+
+    return results
 
 
 # =============================================================================
