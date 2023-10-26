@@ -656,10 +656,10 @@ def get_GenericMidPass_parameters(
 ):
     """
     attacking_short_passing,
-	skill_long_passing,
-	power_long_shots,
-	aggregated_defending,
-	position
+    skill_long_passing,
+    power_long_shots,
+    aggregated_defending,
+    position
     output: 79, 76, 74, 71, RL
     """
     our_midfielder_sofifa_id = our_df_sofifa_ids.loc["mid"]
