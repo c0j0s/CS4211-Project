@@ -549,15 +549,15 @@ def get_GenericDefPass_parameters(
 
     ```python
     [
-        "73, 71, 71, R",
-        "68, 63, 71, CR",
+        ("R", "73, 71, 71, R"),
+        ("CR", "68, 63, 71, CR"),
         ...
     ]
     ```
 
     See line 170 of `12115_away.pcsp`
     """
-    results: list[str] = []
+    results: list[tuple[str, str]] = []
 
     our_defender_sofifa_ids = our_df_sofifa_ids.loc["def"]
     opponent_midfielder_sofifa_ids = opponent_df_sofifa_ids.loc["mid"].to_list()
@@ -585,7 +585,9 @@ def get_GenericDefPass_parameters(
             position,
         )
 
-        results.append(params_string)
+        tple = (position, params_string)
+
+        results.append(tple)
 
     return results
 
