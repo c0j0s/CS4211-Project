@@ -1,199 +1,192 @@
 import pandas as pd
 from typing import *
 
+# TODO:
+# import os
+
 
 POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
-
-ratings = pd.read_csv("./Datasets/ratings/epl_ratings_20152016.csv")
-matches = pd.read_csv("./Datasets/matches/epl_matches_20152016.csv")
-
-# the first column is the row number (0-indexed)
-# drop the first column since we don't need it
-ratings.drop(columns=ratings.columns[0], axis=1, inplace=True)
-matches.drop(columns=matches.columns[0], axis=1, inplace=True)
-
-# fill in all empty cells with 0 (e.g., defenders have blank gk_* stats)
-ratings.fillna(0, inplace=True)
-matches.fillna(0, inplace=True)
-
-# speed up indexing into dataframe
-ratings.set_index("sofifa_id", inplace=True)
-matches.set_index("match_url", inplace=True)
+RATINGS: pd.DataFrame = None
+MATCHES: pd.DataFrame = None
 
 
 def main():
-    # the output pcsp file should match `12115_away.pcsp`
-    match = matches.loc["https://www.premierleague.com/match/12115"]
-
-    away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
-    home_df_sofifa_ids = get_df_sofifa_ids(match, "home")
-    print(away_df_sofifa_ids)
-
-    z = get_KepPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
-    print(f"z = {z}")
-    z = get_KepPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
-    print(f"z = {z}")
-
-    z = get_KepSave_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
-    print(f"z = {z}")
-    z = get_KepSave_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
-    print(f"z = {z}")
-
-    z = get_MidPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
-    print(f"z = {z}")
-    z = get_MidPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
-    print(f"z = {z}")
-
-    z = get_ForPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
-    print(f"z = {z}")
-    z = get_ForPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
-    print(f"z = {z}")
-
-    z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
-    print(f"z = {z}")
-    z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
-    print(f"z = {z}")
-
     with open("./template.pcsp", "r") as pcsp_template_file:
-        lines = pcsp_template_file.readlines()
-        output: list[str] = []
+        pcsp_template_lines = pcsp_template_file.readlines()
 
-        # lines 1 to 17
-        output.extend(lines[1 - 1 : 17 - 1])
+        # TODO:
+        # csv_filenames = os.listdir("./Datasets/matches")
+        csv_filenames = ["epl_matches_20152016.csv"]
 
-        output.append("\n")
+        for csv_filename in csv_filenames:
+            year_id = get_year_id_from_filename(csv_filename)
 
-        # lines 18 to 27
-        output.append(
-            f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
-        )
-        output.append(
-            f"var awayMidPos = {get_pos_array_string(away_df_sofifa_ids, row='mid')};\n"
-        )
-        output.append(
-            f"var awayDefPos = {get_pos_array_string(away_df_sofifa_ids, row='def')};\n"
-        )
-        output.append(
-            f"var awayKepPos = {get_pos_array_string(away_df_sofifa_ids, row='kep')};\n"
-        )
+            RATINGS = pd.read_csv(f"./Datasets/ratings/epl_ratings_{year_id}.csv")
+            MATCHES = pd.read_csv(f"./Datasets/matches/epl_matches_{year_id}.csv")
 
-        output.append("\n")
+            # the first column is the row number (0-indexed)
+            # drop the first column since we don't need it
+            RATINGS.drop(columns=RATINGS.columns[0], axis=1, inplace=True)
+            MATCHES.drop(columns=MATCHES.columns[0], axis=1, inplace=True)
 
-        output.append(
-            f"var homeForPos = {get_pos_array_string(home_df_sofifa_ids, row='for')};\n"
-        )
-        output.append(
-            f"var homeMidPos = {get_pos_array_string(home_df_sofifa_ids, row='mid')};\n"
-        )
-        output.append(
-            f"var homeDefPos = {get_pos_array_string(home_df_sofifa_ids, row='def')};\n"
-        )
-        output.append(
-            f"var homeKepPos = {get_pos_array_string(home_df_sofifa_ids, row='kep')};\n"
-        )
+            # fill in all empty cells with 0 (e.g., defenders have blank gk_* stats)
+            RATINGS.fillna(0, inplace=True)
+            MATCHES.fillna(0, inplace=True)
 
-        output.append("\n")
+            # speed up indexing into dataframe
+            RATINGS.set_index("sofifa_id", inplace=True)
+            MATCHES.set_index("match_url", inplace=True)
 
-        # lines 28 to 35
-        output.extend(lines[28 - 1 : 35 - 1])
+            # TODO:
+            # for i in range(len(MATCHES)):
 
-        output.append("\n")
+            for i in range(1):
+                match = MATCHES.iloc[i]
 
-        # TODO: add the various functions that we've created
+                away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
+                home_df_sofifa_ids = get_df_sofifa_ids(match, "home")
 
-        # AwayKepAtk
-        output.extend(
-            generate_pcsp_actions(
-                "AwayKepAtk",
-                "AwayKepPass",
-                get_KepPass_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                ),
-            )
-        )
+                output: list[str] = []
 
-        output.append("\n")
+                # lines 1 to 17
+                output.extend(pcsp_template_lines[1 - 1 : 17 - 1])
 
-        # AwayKepDef
-        output.extend(
-            generate_pcsp_actions(
-                "AwayKepDef",
-                "AwayKepSave",
-                get_KepSave_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                ),
-            )
-        )
+                output.append("\n")
 
-        output.append("\n")
+                # lines 18 to 27
+                output.append(
+                    f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
+                )
+                output.append(
+                    f"var awayMidPos = {get_pos_array_string(away_df_sofifa_ids, row='mid')};\n"
+                )
+                output.append(
+                    f"var awayDefPos = {get_pos_array_string(away_df_sofifa_ids, row='def')};\n"
+                )
+                output.append(
+                    f"var awayKepPos = {get_pos_array_string(away_df_sofifa_ids, row='kep')};\n"
+                )
 
-        # AwayDef
-        output.extend(
-            generate_pcsp_actions(
-                "AwayDef",
-                "AwayDefPass",
-                get_DefPass_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                ),
-            )
-        )
+                output.append("\n")
 
-        output.append("\n")
+                output.append(
+                    f"var homeForPos = {get_pos_array_string(home_df_sofifa_ids, row='for')};\n"
+                )
+                output.append(
+                    f"var homeMidPos = {get_pos_array_string(home_df_sofifa_ids, row='mid')};\n"
+                )
+                output.append(
+                    f"var homeDefPos = {get_pos_array_string(home_df_sofifa_ids, row='def')};\n"
+                )
+                output.append(
+                    f"var homeKepPos = {get_pos_array_string(home_df_sofifa_ids, row='kep')};\n"
+                )
 
-        # AwayMid
+                output.append("\n")
 
-        # AwayFor
+                # lines 28 to 35
+                output.extend(pcsp_template_lines[28 - 1 : 35 - 1])
 
-        # =====
+                output.append("\n")
 
-        # HomeKepAtk
-        output.extend(
-            generate_pcsp_actions(
-                "HomeKepAtk",
-                "HomeKepPass",
-                get_KepPass_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                ),
-            )
-        )
+                # TODO: add the various functions that we've created
 
-        output.append("\n")
+                # AwayKepAtk
+                output.extend(
+                    generate_pcsp_actions(
+                        "AwayKepAtk",
+                        "AwayKepPass",
+                        get_KepPass_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                        ),
+                    )
+                )
 
-        # HomeKepDef
-        output.extend(
-            generate_pcsp_actions(
-                "HomeKepDef",
-                "HomeKepSave",
-                get_KepSave_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                ),
-            )
-        )
+                output.append("\n")
 
-        output.append("\n")
+                # AwayKepDef
+                output.extend(
+                    generate_pcsp_actions(
+                        "AwayKepDef",
+                        "AwayKepSave",
+                        get_KepSave_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                        ),
+                    )
+                )
 
-        # HomeDef
-        output.extend(
-            generate_pcsp_actions(
-                "HomeDef",
-                "HomeDefPass",
-                get_DefPass_parameters(
-                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                ),
-            )
-        )
+                output.append("\n")
 
-        output.append("\n")
+                # AwayDef
+                output.extend(
+                    generate_pcsp_actions(
+                        "AwayDef",
+                        "AwayDefPass",
+                        get_DefPass_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                        ),
+                    )
+                )
 
-        # HomeMid
+                output.append("\n")
 
-        # HomeFor
+                # AwayMid
 
-        # lines 80 to the end
-        output.extend(lines[80 - 1 :])
+                # AwayFor
 
-        with open("./out.pcsp", "w") as output_file:
-            output_file.writelines(output)
+                # =====
+
+                # HomeKepAtk
+                output.extend(
+                    generate_pcsp_actions(
+                        "HomeKepAtk",
+                        "HomeKepPass",
+                        get_KepPass_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                        ),
+                    )
+                )
+
+                output.append("\n")
+
+                # HomeKepDef
+                output.extend(
+                    generate_pcsp_actions(
+                        "HomeKepDef",
+                        "HomeKepSave",
+                        get_KepSave_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                        ),
+                    )
+                )
+
+                output.append("\n")
+
+                # HomeDef
+                output.extend(
+                    generate_pcsp_actions(
+                        "HomeDef",
+                        "HomeDefPass",
+                        get_DefPass_parameters(
+                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                        ),
+                    )
+                )
+
+                output.append("\n")
+
+                # HomeMid
+
+                # HomeFor
+
+                # lines 80 to the end
+                output.extend(pcsp_template_lines[80 - 1 :])
+
+                match_url = match.name
+                match_id = get_match_id(match_url)
+
+                with open(f"./out_{match_id}.pcsp", "w") as output_file:
+                    output_file.writelines(output)
 
 
 def get_df_sofifa_ids(match: pd.Series, team: Literal["away", "home"]):
@@ -313,7 +306,7 @@ def get_GenericKepPass_parameters(
 
     aggregated_defending = get_aggregated_defending(opponent_forward_sofifa_ids)
 
-    our_keeper_stats = ratings.loc[our_keeper_sofifa_id]
+    our_keeper_stats = RATINGS.loc[our_keeper_sofifa_id]
     our_keeper_stats_attacking_short_passing = int(
         our_keeper_stats["attacking_short_passing"]
     )
@@ -357,7 +350,7 @@ def get_KepSave_parameters(
 
     df_sofifa_ids = away_df_sofifa_ids if our_team == "away" else home_df_sofifa_ids
     keeper_sofifa_id = df_sofifa_ids.at["kep", "C"]
-    keeper_stats = ratings.loc[keeper_sofifa_id]
+    keeper_stats = RATINGS.loc[keeper_sofifa_id]
 
     # find the average of these stats
     # - gk_diving
@@ -492,7 +485,7 @@ def get_aggregated_defending(sofifa_ids: list[int]):
 
     all_defending_stats = []
     for sofifa_id in sofifa_ids:
-        opponent_stats = ratings.loc[sofifa_id]
+        opponent_stats = RATINGS.loc[sofifa_id]
         all_defending_stats.append(int(opponent_stats["mentality_interceptions"]))
         all_defending_stats.append(int(opponent_stats["defending_marking"]))
         all_defending_stats.append(int(opponent_stats["defending_standing_tackle"]))
@@ -527,7 +520,7 @@ def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
 
 def get_aggregated_gk(sofifa_id: int):
     all_gk_stats = []
-    gk_stats = ratings.loc[sofifa_id]
+    gk_stats = RATINGS.loc[sofifa_id]
 
     all_gk_stats.append(int(gk_stats["gk_diving"]))
     all_gk_stats.append(int(gk_stats["gk_handling"]))
@@ -539,17 +532,17 @@ def get_aggregated_gk(sofifa_id: int):
 
 
 def get_attacking_short_passing(sofifa_id: int):
-    player_stats = ratings.loc[sofifa_id]
+    player_stats = RATINGS.loc[sofifa_id]
     return int(player_stats["attacking_short_passing"])
 
 
 def get_skill_long_passing(sofifa_id: int):
-    player_stats = ratings.loc[sofifa_id]
+    player_stats = RATINGS.loc[sofifa_id]
     return int(player_stats["skill_long_passing"])
 
 
 def get_power_long_shots(sofifa_id: int):
-    player_stats = ratings.loc[sofifa_id]
+    player_stats = RATINGS.loc[sofifa_id]
     return int(player_stats["power_long_shots"])
 
 
@@ -559,7 +552,7 @@ def get_aggregated_aggression(sofifa_ids: list[int]):
         if sofifa_id == 0:
             continue
 
-        opponent_defender_stats = ratings.loc[sofifa_id]
+        opponent_defender_stats = RATINGS.loc[sofifa_id]
         all_aggression_stats.append(
             int(opponent_defender_stats["mentality_aggression"])
         )
@@ -670,6 +663,17 @@ def get_pos_array_string(
     return pos_array_string
 
 
+def get_match_id(match_url: str):
+    lst = match_url.split("/")
+    return lst[-1]
+
+
+def get_year_id_from_filename(filename: str):
+    _filename, extension = filename.split(".")
+    words = _filename.split("_")
+    return words[-1]
+
+
 # =============================================================================
 # stefan defender
 # =============================================================================
@@ -724,7 +728,7 @@ def get_GenericDefPass_parameters(
         if our_defender_sofifa_id == 0:
             continue
 
-        our_defender_stats = ratings.loc[our_defender_sofifa_id]
+        our_defender_stats = RATINGS.loc[our_defender_sofifa_id]
         our_defender_stats_attacking_short_passing = int(
             our_defender_stats["attacking_short_passing"]
         )
@@ -840,8 +844,6 @@ def get_GenericForPass_parameters(
     See line 287 of `12115_away.pcsp`
     """
 
-    positions = ["L", "LR", "CL", "C", "CR", "RL", "R"]
-
     opponent_keeper_sofifa_id = opponent_df_sofifa_ids.at["kep", "C"]
     opponent_aggregated_gk = get_aggregated_gk(opponent_keeper_sofifa_id)
 
@@ -858,11 +860,11 @@ def get_GenericForPass_parameters(
     our_forward_stats_combined = []
 
     for i in range(7):
-        our_forward_sofifa_id = our_df_sofifa_ids.at["for", positions[i]]
+        our_forward_sofifa_id = our_df_sofifa_ids.at["for", POSITIONS[i]]
         if our_forward_sofifa_id == 0:
             continue
 
-        our_forward_stats = ratings.loc[our_forward_sofifa_id]
+        our_forward_stats = RATINGS.loc[our_forward_sofifa_id]
         our_forward_atk_fnsh = int(our_forward_stats["attacking_finishing"])
         our_forward_pwr_ls = int(our_forward_stats["power_long_shots"])
         our_forward_atk_volleys = int(our_forward_stats["attacking_volleys"])
@@ -882,7 +884,7 @@ def get_GenericForPass_parameters(
             opponent_aggregated_aggression,
             our_forward_aggregated_penalty_kick,
             opponent_aggregated_gk,
-            positions[i],
+            POSITIONS[i],
         )
 
         our_forward_stats_combined.append(params_string)
