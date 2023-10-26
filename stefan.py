@@ -632,6 +632,8 @@ def get_GenericDefPass_parameters(
 # =============================================================================
 # jun sheng midfielder
 # =============================================================================
+
+
 def get_MidPass_parameters(
     away_df_sofifa_ids: pd.DataFrame,
     home_df_sofifa_ids: pd.DataFrame,
@@ -644,7 +646,7 @@ def get_MidPass_parameters(
         return get_GenericMidPass_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
 
     raise Exception(f"Unknown team={our_team}")
-    
+
 
 def get_GenericMidPass_parameters(
     our_df_sofifa_ids: pd.DataFrame,
@@ -665,23 +667,28 @@ def get_GenericMidPass_parameters(
     # our_attacking_short_passing = get_aggregated_gk(our_midfielder_sofifa_id)
     # our_skill_long_passing = get_aggregated_gk(our_midfielder_sofifa_id)
     # our_power_long_shots = get_aggregated_gk(our_midfielder_sofifa_id)
-    
+
     # shared by all position
     opponent_midfielder_sofifa_ids = opponent_df_sofifa_ids.loc["mid"].to_list()
     opponent_midfielder_sofifa_ids = remove_all_zeros(opponent_midfielder_sofifa_ids)
-    opponent_aggregated_defending = get_aggregated_defending(opponent_midfielder_sofifa_ids)
+    opponent_aggregated_defending = get_aggregated_defending(
+        opponent_midfielder_sofifa_ids
+    )
 
     our_midfielder_parameters = []
     for position, sofifa_id in our_midfielder_sofifa_id.items():
-        our_midfielder_parameters.append(convert_parameters_to_parameters_string(
-            get_attacking_short_passing(sofifa_id),
-            get_skill_long_passing(sofifa_id),
-            get_power_long_shots(sofifa_id),
-            opponent_aggregated_defending,
-            position
-        ))
+        our_midfielder_parameters.append(
+            convert_parameters_to_parameters_string(
+                get_attacking_short_passing(sofifa_id),
+                get_skill_long_passing(sofifa_id),
+                get_power_long_shots(sofifa_id),
+                opponent_aggregated_defending,
+                position,
+            )
+        )
 
     return our_midfielder_parameters
+
 
 # =============================================================================
 # branda forward
