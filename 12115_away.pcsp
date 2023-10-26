@@ -232,7 +232,7 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 // aggregated_defending = 92.3 = 92
 
 // :: (73+77+74+51) / 4 = 68.75
-// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 18
+// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 18 <-- stefan: calculation error :: this should have been 17 
 
 // ============================================================================
 
