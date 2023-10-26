@@ -615,7 +615,7 @@ def generate_pcsp_actions(
     ```python
     [
         "AwayKepAtk = [step >= MAX_STEP]game_ends -> Skip []\\n",
-        "             [step <  MAX_STEP && pos[C] == 1]AwayKepPass(26, 34, 31, C);\\n"
+        "             [step <  MAX_STEP && pos[C ] == 1]AwayKepPass(26, 34, 31, C);\\n"
     ]
     ```
     """
@@ -628,6 +628,10 @@ def generate_pcsp_actions(
 
     for index, tple in enumerate(parameters):
         position, params = tple
+
+        # pad spaces on the right for better alignment
+        # e.g., "C" => "C "
+        position = position.ljust(2)
 
         if index < last_index:
             # put empty square brackets `[]` at the end
