@@ -434,23 +434,14 @@ def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
 def get_aggregated_gk(sofifa_id: int):
     all_gk_stats = []
     gk_stats = ratings.loc[sofifa_id]
-    all_gk_stats.append(
-        int(gk_stats["gk_diving"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_handling"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_reflexes"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_speed"])
-    )
-    all_gk_stats.append(
-        int(gk_stats["gk_positioning"])
-    )
-    
-    return get_average(all_gk_stats)
+
+    all_gk_stats.append(int(gk_stats["gk_diving"]))
+    all_gk_stats.append(int(gk_stats["gk_handling"]))
+    all_gk_stats.append(int(gk_stats["gk_reflexes"]))
+    all_gk_stats.append(int(gk_stats["gk_speed"]))
+    all_gk_stats.append(int(gk_stats["gk_positioning"]))
+
+    return round(get_average(all_gk_stats))
 
 
 def get_attacking_short_passing(sofifa_id: int):
