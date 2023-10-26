@@ -99,6 +99,28 @@ def main():
 
         # TODO: add the various functions that we've created
 
+        # AwayKepAtk
+
+        # AwayKepDef
+
+        # AwayDef
+
+        # AwayMid
+
+        # AwayFor
+
+        # =====
+
+        # HomeKepAtk
+
+        # HomeKepDef
+
+        # HomeDef
+
+        # HomeMid
+
+        # HomeFor
+
         # lines 80 to the end
         output.extend(lines[80 - 1 :])
 
