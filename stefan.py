@@ -232,13 +232,13 @@ def get_GenericKepPass_parameters(
 
     ```python
     [
-        "26, 34, 31, C"
+        ("C", "26, 34, 31, C")
     ]
     ```
 
     See line 106 of `12115_away.pcsp`
     """
-    results: list[str] = []
+    results: list[tuple[str, str]] = []
 
     our_keeper_sofifa_id = our_df_sofifa_ids.at["kep", "C"]
     opponent_forward_sofifa_ids = opponent_df_sofifa_ids.loc["for"].to_list()
@@ -260,7 +260,9 @@ def get_GenericKepPass_parameters(
         position,
     )
 
-    results.append(params_string)
+    tple = (position, params_string)
+
+    results.append(tple)
     return results
 
 
