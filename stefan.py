@@ -46,9 +46,9 @@ def main():
     z = get_MidPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
 
-    z = get_For_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
+    z = get_ForPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
     print(f"z = {z}")
-    z = get_For_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
+    z = get_ForPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
 
     z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
@@ -695,25 +695,25 @@ def get_GenericMidPass_parameters(
 # =============================================================================
 
 
-def get_For_parameters(
+def get_ForPass_parameters(
     away_df_sofifa_ids: pd.DataFrame,
     home_df_sofifa_ids: pd.DataFrame,
     our_team: Literal["away", "home"],
 ):
     """
-    Wrapper around `get_GenericFor_parameters()` to pass in the correct
+    Wrapper around `get_GenericForPass_parameters()` to pass in the correct
     "our_team" and "opponent_team" information
     """
     if our_team == "away":
-        return get_GenericFor_parameters(away_df_sofifa_ids, home_df_sofifa_ids)
+        return get_GenericForPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids)
 
     if our_team == "home":
-        return get_GenericFor_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
+        return get_GenericForPass_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
 
     raise Exception(f"Unknown team={our_team}")
 
 
-def get_GenericFor_parameters(
+def get_GenericForPass_parameters(
     our_df_sofifa_ids: pd.DataFrame,
     opponent_df_sofifa_ids: pd.DataFrame,
 ):
