@@ -742,31 +742,33 @@ def get_GenericFor_parameters(
 
     for i in range(7):
         our_forward_sofifa_id = our_df_sofifa_ids.at["for", positions[i]]
-        if (our_forward_sofifa_id != 0):
-            our_forward_stats = ratings.loc[our_forward_sofifa_id]
-            our_forward_atk_fnsh = int(our_forward_stats["attacking_finishing"])
-            our_forward_pwr_ls = int(our_forward_stats["power_long_shots"])
-            our_forward_atk_volleys = int(our_forward_stats["attacking_volleys"])
-            our_forward_atk_head = int(our_forward_stats["attacking_heading_accuracy"])
-            our_forward_ment_pen = int(our_forward_stats["mentality_penalties"])
-            our_forward_fk_accuracy = int(our_forward_stats["skill_fk_accuracy"])
-            our_forward_aggregated_penalty_kick = round(
-                (our_forward_ment_pen + our_forward_fk_accuracy) / 2
-            )
+        if our_forward_sofifa_id == 0:
+            continue
 
-            params_string = convert_parameters_to_parameters_string(
-                our_forward_atk_fnsh,
-                our_forward_pwr_ls,
-                our_forward_atk_volleys,
-                our_forward_atk_head,
-                opponent_aggregated_defending,
-                opponent_aggregated_aggression,
-                our_forward_aggregated_penalty_kick,
-                opponent_aggregated_gk,
-                positions[i],
-            )
+        our_forward_stats = ratings.loc[our_forward_sofifa_id]
+        our_forward_atk_fnsh = int(our_forward_stats["attacking_finishing"])
+        our_forward_pwr_ls = int(our_forward_stats["power_long_shots"])
+        our_forward_atk_volleys = int(our_forward_stats["attacking_volleys"])
+        our_forward_atk_head = int(our_forward_stats["attacking_heading_accuracy"])
+        our_forward_ment_pen = int(our_forward_stats["mentality_penalties"])
+        our_forward_fk_accuracy = int(our_forward_stats["skill_fk_accuracy"])
+        our_forward_aggregated_penalty_kick = round(
+            (our_forward_ment_pen + our_forward_fk_accuracy) / 2
+        )
 
-            our_forward_stats_combined.append(params_string)
+        params_string = convert_parameters_to_parameters_string(
+            our_forward_atk_fnsh,
+            our_forward_pwr_ls,
+            our_forward_atk_volleys,
+            our_forward_atk_head,
+            opponent_aggregated_defending,
+            opponent_aggregated_aggression,
+            our_forward_aggregated_penalty_kick,
+            opponent_aggregated_gk,
+            positions[i],
+        )
+
+        our_forward_stats_combined.append(params_string)
 
     return our_forward_stats_combined
 
