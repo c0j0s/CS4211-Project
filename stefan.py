@@ -40,7 +40,7 @@ def main():
     print(f"z = {z}")
     z = get_KepSave_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
-    
+
     z = get_MidPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
     print(f"z = {z}")
     z = get_MidPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
@@ -284,7 +284,7 @@ def get_KepSave_parameters(
         raise Exception(f"Unknown team={our_team}")
 
     results: list[str] = []
-    
+
     df_sofifa_ids = away_df_sofifa_ids if our_team == "away" else home_df_sofifa_ids
     keeper_sofifa_id = df_sofifa_ids.at["kep", "C"]
     keeper_stats = ratings.loc[keeper_sofifa_id]
@@ -481,16 +481,18 @@ def get_power_long_shots(sofifa_id: int):
     return int(player_stats["power_long_shots"])
 
 
-def get_aggregated_aggression(sofifa_ids: List[int]):
+def get_aggregated_aggression(sofifa_ids: list[int]):
     all_aggression_stats = []
     for sofifa_id in sofifa_ids:
         if sofifa_id == 0:
             continue
-        
+
         opponent_defender_stats = ratings.loc[sofifa_id]
-        all_aggression_stats.append(int(opponent_defender_stats["mentality_aggression"]))
-    
-    return int(round(get_average(all_aggression_stats)/4, 0))
+        all_aggression_stats.append(
+            int(opponent_defender_stats["mentality_aggression"])
+        )
+
+    return round(get_average(all_aggression_stats) / 4, 0)
 
 
 def convert_formation_to_formation_numbers(formation: str):
