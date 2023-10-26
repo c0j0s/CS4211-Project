@@ -2,8 +2,6 @@ import pandas as pd
 from typing import *
 
 
-CHECK_MAX_STEP = "[step >= MAX_STEP]game_ends -> Skip []"
-
 POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
 
 ratings = pd.read_csv("./Datasets/ratings/epl_ratings_20152016.csv")
@@ -63,6 +61,8 @@ def main():
         # lines 1 to 17
         output.extend(lines[1 - 1 : 17 - 1])
 
+        output.append("\n")
+
         # lines 18 to 27
         output.append(
             f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
@@ -97,13 +97,48 @@ def main():
         # lines 28 to 35
         output.extend(lines[28 - 1 : 35 - 1])
 
+        output.append("\n")
+
         # TODO: add the various functions that we've created
 
         # AwayKepAtk
+        output.extend(
+            generate_pcsp_actions(
+                "AwayKepAtk",
+                "AwayKepPass",
+                get_KepPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # AwayKepDef
+        output.extend(
+            generate_pcsp_actions(
+                "AwayKepDef",
+                "AwayKepSave",
+                get_KepSave_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # AwayDef
+        output.extend(
+            generate_pcsp_actions(
+                "AwayDef",
+                "AwayDefPass",
+                get_DefPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # AwayMid
 
@@ -112,10 +147,43 @@ def main():
         # =====
 
         # HomeKepAtk
+        output.extend(
+            generate_pcsp_actions(
+                "HomeKepAtk",
+                "HomeKepPass",
+                get_KepPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # HomeKepDef
+        output.extend(
+            generate_pcsp_actions(
+                "HomeKepDef",
+                "HomeKepSave",
+                get_KepSave_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # HomeDef
+        output.extend(
+            generate_pcsp_actions(
+                "HomeDef",
+                "HomeDefPass",
+                get_DefPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                ),
+            )
+        )
+
+        output.append("\n")
 
         # HomeMid
 
@@ -534,9 +602,50 @@ def remove_all_zeros(lst: list[int]):
     return list(filter(lambda x: x > 0, lst))
 
 
-# =============================================================================
-# unused
-# =============================================================================
+def generate_pcsp_actions(
+    process_name_1: str, process_name_2: str, parameters: list[tuple[str, str]]
+):
+    """
+    Sample inputs:
+    - `process_name_1`: `"AwayKepAtk"`
+    - `process_name_2`: `"AwayKepPass"`
+    - `parameters`: `[("C", "26, 34, 31, C")]`
+
+    Sample output:
+    ```python
+    [
+        "AwayKepAtk = [step >= MAX_STEP]game_ends -> Skip []\\n",
+        "             [step <  MAX_STEP && pos[C] == 1]AwayKepPass(26, 34, 31, C);\\n"
+    ]
+    ```
+    """
+    lines: list[str] = []
+    lines.append(f"{process_name_1} = [step >= MAX_STEP]game_ends -> Skip []\n")
+
+    indentation = " " * (len(process_name_1) + 3)
+
+    last_index = len(parameters) - 1
+
+    for index, tple in enumerate(parameters):
+        position, params = tple
+
+        if index < last_index:
+            # put empty square brackets `[]` at the end
+            lines.append(
+                indentation
+                + f"[step <  MAX_STEP && pos[{position}] == 1]{process_name_2}({params}) []\n"
+            )
+        elif index == last_index:
+            # put a semicolon `;` at the end
+            lines.append(
+                indentation
+                + f"[step <  MAX_STEP && pos[{position}] == 1]{process_name_2}({params});\n"
+            )
+        else:
+            # should never reach here
+            raise Exception("Unknown list index")
+
+    return lines
 
 
 def get_pos_array_string(
