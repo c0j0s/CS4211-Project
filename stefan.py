@@ -496,23 +496,21 @@ def remove_all_zeros(lst: list[int]):
 # =============================================================================
 
 
-def get_pos_array_string_from_df_sofifa_ids(
+def get_pos_array_string(
     df_sofifa_ids: pd.DataFrame, row: Literal["kep", "def", "mid", "for"]
 ):
     """
-    Returns a variant of `"[-1, -1, -1, -1, -1, -1, 0, 0, 1, 0, 1, 0, 0, -1, -1, -1, -1, -1, -1]"`
+    Returns a variant of `"[-1(6), 0, 0, 1, 0, 1, 0, 0, -1(6)]"`
     """
     row_of_sofifa_ids = df_sofifa_ids.loc[row].to_list()
 
-    # "cast" all cells that have a sofifa id to 1
-    pos_array_middle = list(map(lambda x: 1 if x > 0 else 0, row_of_sofifa_ids))
+    # "cast" all cells that have a sofifa id to "1"
+    pos_array_middle = list(map(lambda x: "1" if x > 0 else "0", row_of_sofifa_ids))
 
-    # need to add `-1`s on both sides
-    left = [-1] * 6
-    right = [-1] * 6
-    pos_array = left + pos_array_middle + right
+    # need to add "-1"s on both sides
+    pos_array = ["-1(6)"] + pos_array_middle + ["-1(6)"]
 
-    pos_array_string = str(pos_array)
+    pos_array_string = "[" + ", ".join(pos_array) + "]"
     return pos_array_string
 
 
