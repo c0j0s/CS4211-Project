@@ -306,7 +306,7 @@ def get_KepSave_parameters(
         int(keeper_stats["gk_positioning"]),
     ]
 
-    aggregated_gk = get_average(all_gk_stats)
+    aggregated_gk = round(get_average(all_gk_stats))
     position = "C"
 
     params_string = convert_parameters_to_parameters_string(
@@ -454,7 +454,7 @@ def apply_defender_multiplier_bonus(stat: int, number_of_defenders: int):
     multiplier = 100
     multiplier += (number_of_defenders - 1) * 10
     multiplier /= 100
-    return int(round(stat * multiplier))
+    return round(stat * multiplier)
 
 
 def get_aggregated_gk(sofifa_id: int):
