@@ -62,6 +62,25 @@ def main():
     z = get_DefPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="home")
     print(f"z = {z}")
 
+    with open("./template.pcsp", "r") as pcsp_template_file:
+        lines = pcsp_template_file.readlines()
+        output: list[str] = []
+
+        # TODO: remove byte order mark
+
+        output.extend(lines[1 - 1 : 17 - 1])
+
+        # TODO: add awayForPos, etc.
+
+        output.extend(lines[28 - 1 : 35 - 1])
+
+        # TODO: add the various functions that we've created
+
+        output.extend(lines[80 - 1 :])
+
+        with open("./out.pcsp", "w") as output_file:
+            output_file.writelines(output)
+
 
 def get_df_sofifa_ids(match: pd.Series, team: Literal["away", "home"]):
     """
