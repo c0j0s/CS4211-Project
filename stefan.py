@@ -693,21 +693,25 @@ def get_GenericMidPass_parameters(
 # =============================================================================
 # branda forward
 # =============================================================================
+
+
 def get_For_parameters(
     away_df_sofifa_ids: pd.DataFrame,
     home_df_sofifa_ids: pd.DataFrame,
     our_team: Literal["away", "home"],
 ):
-    """ Wrapper around `get_GenericFor_parameters()` to pass in the correct
+    """
+    Wrapper around `get_GenericFor_parameters()` to pass in the correct
     "our_team" and "opponent_team" information
     """
     if our_team == "away":
         return get_GenericFor_parameters(away_df_sofifa_ids, home_df_sofifa_ids)
-    
+
     if our_team == "home":
         return get_GenericFor_parameters(home_df_sofifa_ids, away_df_sofifa_ids)
-    
+
     raise Exception(f"Unknown team={our_team}")
+
 
 def get_GenericFor_parameters(
     our_df_sofifa_ids: pd.DataFrame,
@@ -715,23 +719,27 @@ def get_GenericFor_parameters(
 ):
     """
     Returns an array of a variant of `"77, 75, 74, 77, 92, 18, 73, 71, RL"`
-    
+
     See line 287 of `12115_away.pcsp`
     """
-    
+
     positions = ["L", "LR", "CL", "C", "CR", "RL", "R"]
-    
+
     opponent_keeper_sofifa_id = opponent_df_sofifa_ids.at["kep", "C"]
     opponent_aggregated_gk = get_aggregated_gk(opponent_keeper_sofifa_id)
-    
+
     opponent_defender_sofifa_ids = opponent_df_sofifa_ids.loc["def"].to_list()
     opponent_defender_sofifa_ids = remove_all_zeros(opponent_defender_sofifa_ids)
-    
-    opponent_aggregated_defending = get_aggregated_defending(opponent_defender_sofifa_ids)
-    opponent_aggregated_aggression = get_aggregated_aggression(opponent_defender_sofifa_ids)
-    
+
+    opponent_aggregated_defending = get_aggregated_defending(
+        opponent_defender_sofifa_ids
+    )
+    opponent_aggregated_aggression = get_aggregated_aggression(
+        opponent_defender_sofifa_ids
+    )
+
     our_forward_stats_combined = []
-    
+
     for i in range(7):
         our_forward_sofifa_id = our_df_sofifa_ids.at["for", positions[i]]
         if (our_forward_sofifa_id != 0):
@@ -742,8 +750,10 @@ def get_GenericFor_parameters(
             our_forward_atk_head = int(our_forward_stats["attacking_heading_accuracy"])
             our_forward_ment_pen = int(our_forward_stats["mentality_penalties"])
             our_forward_fk_accuracy = int(our_forward_stats["skill_fk_accuracy"])
-            our_forward_aggregated_penalty_kick = int(round((our_forward_ment_pen + our_forward_fk_accuracy)/2, 0))
-            
+            our_forward_aggregated_penalty_kick = round(
+                (our_forward_ment_pen + our_forward_fk_accuracy) / 2
+            )
+
             params_string = convert_parameters_to_parameters_string(
                 our_forward_atk_fnsh,
                 our_forward_pwr_ls,
@@ -755,14 +765,11 @@ def get_GenericFor_parameters(
                 opponent_aggregated_gk,
                 positions[i],
             )
-            
+
             our_forward_stats_combined.append(params_string)
-    
+
     return our_forward_stats_combined
+
 
 if __name__ == "__main__":
     main()
-
-
-
-        
