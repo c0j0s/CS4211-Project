@@ -274,7 +274,7 @@ def get_KepSave_parameters(
 
     ```python
     [
-        "72, C"
+        ("C", "72, C")
     ]
     ```
 
@@ -283,7 +283,7 @@ def get_KepSave_parameters(
     if our_team != "away" and our_team != "home":
         raise Exception(f"Unknown team={our_team}")
 
-    results: list[str] = []
+    results: list[tuple[str, str]] = []
 
     df_sofifa_ids = away_df_sofifa_ids if our_team == "away" else home_df_sofifa_ids
     keeper_sofifa_id = df_sofifa_ids.at["kep", "C"]
@@ -312,7 +312,9 @@ def get_KepSave_parameters(
         position,
     )
 
-    results.append(params_string)
+    tple = (position, params_string)
+
+    results.append(tple)
     return results
 
 
