@@ -29,12 +29,6 @@ def main():
 
     away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
     home_df_sofifa_ids = get_df_sofifa_ids(match, "home")
-
-    # pcsp_homeForPos = f"var homeForPos = {get_pos_array_string_from_df_sofifa_ids(home_df_sofifa_ids, row='for')};"
-    # pcsp_homeMidPos = f"var homeMidPos = {get_pos_array_string_from_df_sofifa_ids(home_df_sofifa_ids, row='mid')};"
-    # pcsp_homeDefPos = f"var homeDefPos = {get_pos_array_string_from_df_sofifa_ids(home_df_sofifa_ids, row='def')};"
-    # pcsp_homeKepPos = f"var homeKepPos = {get_pos_array_string_from_df_sofifa_ids(home_df_sofifa_ids, row='kep')};"
-
     print(away_df_sofifa_ids)
 
     z = get_KepPass_parameters(away_df_sofifa_ids, home_df_sofifa_ids, our_team="away")
@@ -66,16 +60,46 @@ def main():
         lines = pcsp_template_file.readlines()
         output: list[str] = []
 
-        # TODO: remove byte order mark
-
+        # lines 1 to 17
         output.extend(lines[1 - 1 : 17 - 1])
 
-        # TODO: add awayForPos, etc.
+        # lines 18 to 27
+        output.append(
+            f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
+        )
+        output.append(
+            f"var awayMidPos = {get_pos_array_string(away_df_sofifa_ids, row='mid')};\n"
+        )
+        output.append(
+            f"var awayDefPos = {get_pos_array_string(away_df_sofifa_ids, row='def')};\n"
+        )
+        output.append(
+            f"var awayKepPos = {get_pos_array_string(away_df_sofifa_ids, row='kep')};\n"
+        )
 
+        output.append("\n")
+
+        output.append(
+            f"var homeForPos = {get_pos_array_string(home_df_sofifa_ids, row='for')};\n"
+        )
+        output.append(
+            f"var homeMidPos = {get_pos_array_string(home_df_sofifa_ids, row='mid')};\n"
+        )
+        output.append(
+            f"var homeDefPos = {get_pos_array_string(home_df_sofifa_ids, row='def')};\n"
+        )
+        output.append(
+            f"var homeKepPos = {get_pos_array_string(home_df_sofifa_ids, row='kep')};\n"
+        )
+
+        output.append("\n")
+
+        # lines 28 to 35
         output.extend(lines[28 - 1 : 35 - 1])
 
         # TODO: add the various functions that we've created
 
+        # lines 80 to the end
         output.extend(lines[80 - 1 :])
 
         with open("./out.pcsp", "w") as output_file:
