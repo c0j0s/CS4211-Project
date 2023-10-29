@@ -141,8 +141,30 @@ def main():
         output.append("\n")
 
         # AwayMid
+        output.extend(
+            generate_pcsp_actions(
+                "AwayMid",
+                "AwayMidPass",
+                get_MidPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                ),
+            )
+        )
+        
+        output.append("\n")
 
         # AwayFor
+        output.extend(
+            generate_pcsp_actions(
+                "AwayFor",
+                "AwayForPass",
+                get_ForPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                ),
+            )
+        )
+        
+        output.append("\n")
 
         # =====
 
@@ -186,8 +208,30 @@ def main():
         output.append("\n")
 
         # HomeMid
+        output.extend(
+            generate_pcsp_actions(
+                "HomeMid",
+                "HomeMidPass",
+                get_MidPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                ),
+            )
+        )
+        
+        output.append("\n")
 
         # HomeFor
+        output.extend(
+            generate_pcsp_actions(
+                "HomeFor",
+                "HomeForPass",
+                get_ForPass_parameters(
+                    away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                ),
+            )
+        )
+        
+        output.append("\n")
 
         # lines 80 to the end
         output.extend(lines[80 - 1 :])
@@ -564,7 +608,7 @@ def get_aggregated_aggression(sofifa_ids: list[int]):
             int(opponent_defender_stats["mentality_aggression"])
         )
 
-    return round(get_average(all_aggression_stats) / 4, 0)
+    return round(get_average(all_aggression_stats) / 4)
 
 
 def convert_formation_to_formation_numbers(formation: str):
