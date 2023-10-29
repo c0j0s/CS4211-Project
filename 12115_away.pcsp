@@ -232,7 +232,7 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 // aggregated_defending = 92.3 = 92
 
 // :: (73+77+74+51) / 4 = 68.75
-// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 18 <-- stefan: calculation error :: this should have been 17 
+// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 17 <-- stefan: calculation error :: this should have been 17 
 
 // ============================================================================
 
@@ -285,9 +285,9 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 //					                                     |   |   |   |   |   |   |   aggregated_gk
 //					                                     |   |   |   |   |   |   |   |
 AwayFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 18, 73, 71, RL) []
-          [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 18, 56, 71, C) []
-          [step <  MAX_STEP && pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 18, 79, 71, LR);
+          [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 17, 73, 71, RL) []
+          [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 17, 56, 71, C) []
+          [step <  MAX_STEP && pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 17, 79, 71, LR);
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
 // Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter

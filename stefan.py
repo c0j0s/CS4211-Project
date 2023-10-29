@@ -608,7 +608,7 @@ def get_aggregated_aggression(sofifa_ids: list[int]):
             int(opponent_defender_stats["mentality_aggression"])
         )
 
-    return round(get_average(all_aggression_stats) / 4, 0)
+    return round(get_average(all_aggression_stats) / 4)
 
 
 def convert_formation_to_formation_numbers(formation: str):

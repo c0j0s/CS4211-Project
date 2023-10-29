@@ -321,7 +321,7 @@ AwayFor = [step >= MAX_STEP]game_ends -> Skip []
 // ((33+23+22+25 + 20+48+32+20 + 45+19+30+28) / 3 / 4) * 1.2 = 34.5
 // aggregated_defending = 34.5 = 35
 HomeKepAtk = [step >= MAX_STEP]game_ends -> Skip []
-             [step <  MAX_STEP && pos[C] == 1]HomeKepPass(26, 34, 31 C);
+             [step <  MAX_STEP && pos[C] == 1]HomeKepPass(26, 34, 31, C);
 
 // home keeper C is "Artur Boruc"
 // gk_diving=82

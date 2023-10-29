@@ -51,9 +51,9 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
           [step <  MAX_STEP && pos[RL] == 1]AwayMidPass(79, 76, 74, 71, RL);
 
 AwayFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 17.0, 79, 71, LR) []
-          [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 17.0, 56, 71, C) []
-          [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 17.0, 72, 71, RL);
+          [step <  MAX_STEP && pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 17, 79, 71, LR) []
+          [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 17, 56, 71, C) []
+          [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 17, 72, 71, RL);
 
 HomeKepAtk = [step >= MAX_STEP]game_ends -> Skip []
              [step <  MAX_STEP && pos[C ] == 1]HomeKepPass(25, 34, 34, C);
@@ -74,8 +74,8 @@ HomeMid = [step >= MAX_STEP]game_ends -> Skip []
           [step <  MAX_STEP && pos[R ] == 1]HomeMidPass(69, 66, 74, 85, R);
 
 HomeFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[CL] == 1]HomeForPass(79, 64, 65, 62, 98, 19.0, 60, 72, CL) []
-          [step <  MAX_STEP && pos[CR] == 1]HomeForPass(65, 58, 67, 53, 98, 19.0, 52, 72, CR);
+          [step <  MAX_STEP && pos[CL] == 1]HomeForPass(79, 64, 65, 62, 98, 19, 60, 72, CL) []
+          [step <  MAX_STEP && pos[CR] == 1]HomeForPass(65, 58, 67, 53, 98, 19, 52, 72, CR);
 
 AwayKepPass(
 	attacking_short_passing,
