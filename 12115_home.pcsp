@@ -480,9 +480,9 @@ HomeMid = [step >= MAX_STEP]game_ends -> Skip []
 //          					     					|   |   |   |   |   |   |   aggregated_gk
 //                                   					|   |   |   |   |   |   |   |
 HomeFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[RL] == 1]HomeForPass(77, 75, 74, 77, 92, 18, 73, 71, RL) []
-          [step <  MAX_STEP && pos[C ] == 1]HomeForPass(75, 73, 66, 76, 92, 18, 56, 71, C) []
-          [step <  MAX_STEP && pos[LR] == 1]HomeForPass(73, 65, 65, 69, 92, 18, 79, 71, LR);
+          [step <  MAX_STEP && pos[RL] == 1]HomeForPass(77, 75, 74, 77, 92, 17, 73, 71, RL) []
+          [step <  MAX_STEP && pos[C ] == 1]HomeForPass(75, 73, 66, 76, 92, 17, 56, 71, C) []
+          [step <  MAX_STEP && pos[LR] == 1]HomeForPass(73, 65, 65, 69, 92, 17, 79, 71, LR);
 
 
 ///////////// Individual Positions /////////////
