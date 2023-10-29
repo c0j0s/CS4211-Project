@@ -794,14 +794,14 @@ def get_GenericMidPass_parameters(
 
     our_midfielder_parameters = []
     for position, sofifa_id in our_midfielder_sofifa_id.items():
-        our_midfielder_parameters.append(
+        our_midfielder_parameters.append((position,
             convert_parameters_to_parameters_string(
                 get_attacking_short_passing(sofifa_id),
                 get_skill_long_passing(sofifa_id),
                 get_power_long_shots(sofifa_id),
                 opponent_aggregated_defending,
                 position,
-            )
+            ))
         )
 
     return our_midfielder_parameters
@@ -884,8 +884,10 @@ def get_GenericForPass_parameters(
             opponent_aggregated_gk,
             positions[i],
         )
+        
+        tple = (positions[i], params_string)
 
-        our_forward_stats_combined.append(params_string)
+        our_forward_stats_combined.append(tple)
 
     return our_forward_stats_combined
 
