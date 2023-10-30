@@ -21,7 +21,7 @@ def write_csv(path, dataset):
     dataset.to_csv(path, index=False)
 
 # %%
-merged_df = pd.merge(df_away, df_home, on='match_id', how='inner')
+merged_df = pd.merge(df_away, df_home, on=['match_id', 'model'], how='inner')
 
 # %%
 softmax_df = merged_df.copy()
@@ -31,7 +31,5 @@ softmax_df['match_url'] = merged_df['match_id'].apply(lambda x: f'https://www.pr
 softmax_df[['away_prob_softmax', 'home_prob_softmax']] = merged_df[['prob_away', 'prob_home']].apply(softmax, axis=1)
 
 # %%
-write_csv(f'{output}/away.csv', softmax_df[['match_url', 'away_prob_softmax']])
-write_csv(f'{output}/home.csv', softmax_df[['match_url', 'home_prob_softmax']])
-
-
+write_csv(f'{output}/away.csv', softmax_df[['match_url', 'away_prob_softmax','model']])
+write_csv(f'{output}/home.csv', softmax_df[['match_url', 'home_prob_softmax', 'model']])

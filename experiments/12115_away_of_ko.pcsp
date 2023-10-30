@@ -30,7 +30,7 @@ var home_team_score = 0;
 
 StartGame = coin_toss -> pcase {
 	1: away_team_starts -> openPos(); AwayMid
-	// 1: home_team_starts -> openPos(); HomeMid
+	1: home_team_starts -> openPos(); HomeMid
 };
 
 AwayKepAtk = [step >= MAX_STEP]game_ends -> Skip []
@@ -362,12 +362,12 @@ HomeForPass(
 				};
 
 AwayKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ home_team_score++ } -> Skip
 							};
 
 HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ away_team_score++ } -> Skip
 							};
 

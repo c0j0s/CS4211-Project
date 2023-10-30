@@ -12,7 +12,7 @@ def read_directory(path, extension='.txt'):
 
 def write_csv(file_path, dataset):
     with open(file_path, 'w', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=['match_id', 'prob'])
+        writer = csv.DictWriter(csv_file, fieldnames=['match_id', 'prob', 'model'])
         writer.writeheader()
         writer.writerows(dataset)
 
@@ -25,7 +25,7 @@ def main():
     for file in files:
         with open(f'{path}/{file}', 'r') as f:
             meta = file.replace(".txt", "").split("_")
-            print(f'probs of match:{meta[0]} for team {meta[1]}:')
+            print(f'probs of match:{meta[0]} for team {meta[1]} model[{meta[2:]}]:')
             text = f.read()
             matches = re.findall(pattern, text)
             probs_raw = [p.split(",") for p in matches]
@@ -41,12 +41,14 @@ def main():
             if meta[1] == "home":
                 home_dataset.append({
                     "match_id"  :meta[0],
-                    "prob"      :probs[0][mode]
+                    "prob"      :probs[0][mode],
+                    "model"     :"-".join(meta[2:])
                 })
             else:
                 away_dataset.append({
                     "match_id"  :meta[0],
-                    "prob"      :probs[0][mode]
+                    "prob"      :probs[0][mode],
+                    "model"     :"-".join(meta[2:])
                 })
             
     write_csv(f'{output}/away_probs.csv', away_dataset)

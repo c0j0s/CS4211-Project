@@ -290,7 +290,7 @@ AwayForPass(
 	]	finish -> pcase {
 					attacking_finishing: shoot -> UpdatePos(position, FI); HomeKepDef
 					aggregated_defending: tackled -> openPos(); HomeDef
-					// aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -298,7 +298,7 @@ AwayForPass(
 	]	longShot -> pcase {
 					power_long_shots: shoot -> UpdatePos(position, LS); HomeKepDef
 					aggregated_defending: tackled -> openPos(); HomeDef
-					// aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -306,7 +306,7 @@ AwayForPass(
 	]	volley -> pcase {
 					attacking_volleys: shoot -> UpdatePos(position, VO); HomeKepDef
 					aggregated_defending: tackled -> openPos(); HomeDef
-					// aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -314,7 +314,7 @@ AwayForPass(
 	]	header -> pcase {
 					attacking_heading_accuracy: shoot -> UpdatePos(position, HD); HomeKepDef
 					aggregated_defending: tackled -> openPos(); HomeDef
-					// aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> AwaySimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				};
 
 HomeForPass(
@@ -334,7 +334,7 @@ HomeForPass(
 	]	finish -> pcase {
 					attacking_finishing: shoot -> UpdatePos(position, FI); AwayKepDef
 					aggregated_defending: tackled -> openPos(); AwayDef
-					// aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -342,7 +342,7 @@ HomeForPass(
 	]	longShot -> pcase {
 					power_long_shots: shoot -> UpdatePos(position, LS); AwayKepDef
 					aggregated_defending: tackled -> openPos(); AwayDef
-					// aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -350,7 +350,7 @@ HomeForPass(
 	]	volley -> pcase {
 					attacking_volleys: shoot -> UpdatePos(position, VO); AwayKepDef
 					aggregated_defending: tackled -> openPos(); AwayDef
-					// aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				}
 	[]
 	[
@@ -358,16 +358,16 @@ HomeForPass(
 	]	header -> pcase {
 					attacking_heading_accuracy: shoot -> UpdatePos(position, HD); AwayKepDef
 					aggregated_defending: tackled -> openPos(); AwayDef
-					// aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
+					aggregated_aggression: penalty -> HomeSimulatePenaltyKick(aggregated_penalty_kick, aggregated_gk)
 				};
 
 AwayKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ home_team_score++ } -> Skip
 							};
 
 HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ away_team_score++ } -> Skip
 							};
 

@@ -39,13 +39,13 @@ enum {SP, LP, LS, FI, VO, HD};
 // 1 means there is a player in that position
 // 0 means there is no player in that position
 // [-1 -1 -1 -1 -1 -1    L, LR, CL, C, CR, RL, R    -1 -1 -1 -1 -1 -1]
-var awayForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
-var awayMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+var awayForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)];
+var awayMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
 var awayDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
 var awayKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
 
-var homeForPos = [-1(6), 0,  0,  1, 0, 1,  0,  0, -1(6)];
-var homeMidPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
+var homeForPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
+var homeMidPos = [-1(6), 0,  1,  0, 1, 0,  1,  0, -1(6)];
 var homeDefPos = [-1(6), 1,  0,  1, 0, 1,  0,  1, -1(6)];
 var homeKepPos = [-1(6), 0,  0,  0, 1, 0,  0,  0, -1(6)];
 
@@ -103,7 +103,7 @@ StartGame = coin_toss -> pcase {
 // ((40+20+39+25 + 36+22+27+19) / 2 / 4) * 1.1 = 31.35
 // aggregated_defending = 31.35 = 31
 AwayKepAtk = [step >= MAX_STEP]game_ends -> Skip []
-             [step <  MAX_STEP && pos[C] == 1]AwayKepPass(26, 34, 31, C);
+             [step <  MAX_STEP && pos[C] == 1]AwayKepPass(25, 34, 35, C);
 
 // away keeper C is "Bradley Guzan"
 // gk_diving=80
@@ -114,7 +114,7 @@ AwayKepAtk = [step >= MAX_STEP]game_ends -> Skip []
 // (80+76+81+48+77) / 5 = 72.4
 // aggregated_gk = 72.4 = 72
 AwayKepDef = [step >= MAX_STEP]game_ends -> Skip []
-             [step <  MAX_STEP && pos[C] == 1]AwayKepSave(72, C);
+             [step <  MAX_STEP && pos[C] == 1]AwayKepSave(71, C);
 
 // Here for the defender, the first 3 parameters are with respect to the ShortPass, LongPass, and prob. to lose the ball respectively
 // The prob. to lose the ball for the attacking team's defender was calculated based on the defending team forward's player ratings
@@ -167,10 +167,10 @@ AwayKepDef = [step >= MAX_STEP]game_ends -> Skip []
 // ((70+66+68+68 + 60+62+68+62 + 37+30+44+31 + 46+56+57+53) / 4 / 4) * 1.3 = 71.3375
 // aggregated_defending = 71.3375 = 71
 AwayDef = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[R ] == 1]AwayDefPass(73, 71, 71, R) []
-          [step <  MAX_STEP && pos[CR] == 1]AwayDefPass(68, 63, 71, CR) []
-          [step <  MAX_STEP && pos[CL] == 1]AwayDefPass(68, 63, 71, CL) []
-          [step <  MAX_STEP && pos[L ] == 1]AwayDefPass(72, 59, 71, L);
+          [step <  MAX_STEP && pos[R ] == 1]AwayDefPass(70, 64, 85, R) []
+          [step <  MAX_STEP && pos[CR] == 1]AwayDefPass(65, 50, 85, CR) []
+          [step <  MAX_STEP && pos[CL] == 1]AwayDefPass(68, 60, 85, CL) []
+          [step <  MAX_STEP && pos[L ] == 1]AwayDefPass(68, 64, 85, L);
 
 // Similar to defender, midfielders and forwards have their own specific parameters
 // See their processes below for more information on what those parameters are
@@ -196,9 +196,10 @@ AwayDef = [step >= MAX_STEP]game_ends -> Skip []
 
 // use the same aggregated_defending stat = 71
 AwayMid = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[RL] == 1]AwayMidPass(79, 76, 74, 71, RL) []
-          [step <  MAX_STEP && pos[C ] == 1]AwayMidPass(83, 80, 57, 71, C) []
-          [step <  MAX_STEP && pos[LR] == 1]AwayMidPass(78, 73, 75, 71, LR);
+          [step <  MAX_STEP && pos[R ] == 1]AwayMidPass(69, 66, 74, 85, R) []
+		  [step <  MAX_STEP && pos[CR] == 1]AwayMidPass(73, 71, 73, 85, CR) []
+		  [step <  MAX_STEP && pos[CL] == 1]AwayMidPass(82, 76, 65, 85, CL) []
+		  [step <  MAX_STEP && pos[L ] == 1]AwayMidPass(68, 59, 66, 85, L);
 
 // home defender R is "Simon Francis"
 // mentality_interceptions=68
@@ -232,7 +233,7 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 // aggregated_defending = 92.3 = 92
 
 // :: (73+77+74+51) / 4 = 68.75
-// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 17 <-- stefan: calculation error :: this should have been 17 
+// :: aggregated_aggression = 68.75 * (1/4) = 17.1875 = 18 <-- stefan: calculation error :: this should have been 17 
 
 // ============================================================================
 
@@ -285,9 +286,10 @@ AwayMid = [step >= MAX_STEP]game_ends -> Skip []
 //					                                     |   |   |   |   |   |   |   aggregated_gk
 //					                                     |   |   |   |   |   |   |   |
 AwayFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[RL] == 1]AwayForPass(77, 75, 74, 77, 92, 17, 73, 71, RL) []
-          [step <  MAX_STEP && pos[C ] == 1]AwayForPass(75, 73, 66, 76, 92, 17, 56, 71, C) []
-          [step <  MAX_STEP && pos[LR] == 1]AwayForPass(73, 65, 65, 69, 92, 17, 79, 71, LR);
+          [step <  MAX_STEP && pos[CR] == 1]AwayForPass(65, 58, 67, 53, 75, 19, 52, 72, CR) []
+		  [step <  MAX_STEP && pos[CL] == 1]AwayForPass(79, 64, 65, 62, 75, 19, 60, 72, CL);
+
+
 
 ///////////// HOME TEAM PLAYERS (Defending Team) /////////////
 // Home team defender, midfielders and forwards are already implicitly "defending:gk_handling, gk_*" via the prob. to lose the ball parameter
@@ -319,7 +321,7 @@ AwayFor = [step >= MAX_STEP]game_ends -> Skip []
 // ((33+23+22+25 + 20+48+32+20 + 45+19+30+28) / 3 / 4) * 1.2 = 34.5
 // aggregated_defending = 34.5 = 35
 HomeKepAtk = [step >= MAX_STEP]game_ends -> Skip []
-             [step <  MAX_STEP && pos[C] == 1]HomeKepPass(25, 34, 35, C);
+             [step <  MAX_STEP && pos[C] == 1]HomeKepPass(26, 34, 31, C);
 
 // home keeper C is "Artur Boruc"
 // gk_diving=82
@@ -331,7 +333,7 @@ HomeKepAtk = [step >= MAX_STEP]game_ends -> Skip []
 // Note: gk_kicking only measures the goalkeeper's ability to kick the ball from
 // out of the hands or on the ground
 HomeKepDef = [step >= MAX_STEP]game_ends -> Skip []
-             [step <  MAX_STEP && pos[C] == 1]HomeKepSave(71, C);
+             [step <  MAX_STEP && pos[C] == 1]HomeKepSave(72, C);
 
 // home defender R is "Simon Francis"
 // attacking_short_passing=70
@@ -372,10 +374,10 @@ HomeKepDef = [step >= MAX_STEP]game_ends -> Skip []
 // ((70+63+74+63 + 71+63+67+64 + 83+76+79+74) / 3 / 4) * 1.2 = 84.69999
 // aggregated_defending = 84.69999 = 85
 HomeDef = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[R ] == 1]HomeDefPass(70, 64, 85, R) []
-          [step <  MAX_STEP && pos[CR] == 1]HomeDefPass(65, 50, 85, CR) []
-          [step <  MAX_STEP && pos[CL] == 1]HomeDefPass(68, 60, 85, CL) []
-          [step <  MAX_STEP && pos[L ] == 1]HomeDefPass(68, 64, 85, L);
+          [step <  MAX_STEP && pos[R ] == 1]HomeDefPass(73, 71, 71, R) []
+          [step <  MAX_STEP && pos[CR] == 1]HomeDefPass(68, 63, 71, CR) []
+          [step <  MAX_STEP && pos[CL] == 1]HomeDefPass(68, 63, 71, CL) []
+          [step <  MAX_STEP && pos[L ] == 1]HomeDefPass(72, 59, 71, L);
 
 // home midfielder R is "Matt Ritchie"
 // attacking_short_passing=69
@@ -399,10 +401,9 @@ HomeDef = [step >= MAX_STEP]game_ends -> Skip []
 
 // use the same aggregated_defending stat = 85
 HomeMid = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[R ] == 1]HomeMidPass(69, 66, 74, 85, R) []
-          [step <  MAX_STEP && pos[CR] == 1]HomeMidPass(73, 71, 73, 85, CR) []
-          [step <  MAX_STEP && pos[CL] == 1]HomeMidPass(82, 76, 65, 85, CL) []
-          [step <  MAX_STEP && pos[L ] == 1]HomeMidPass(68, 59, 66, 85, L);
+          [step <  MAX_STEP && pos[RL] == 1]HomeMidPass(79, 76, 74, 71, RL) []
+          [step <  MAX_STEP && pos[C ] == 1]HomeMidPass(83, 80, 57, 71, C) []
+          [step <  MAX_STEP && pos[LR] == 1]HomeMidPass(78, 73, 75, 71, LR);
 
 // away keeper C is "Bradley Guzan"
 // gk_diving=80
@@ -479,8 +480,9 @@ HomeMid = [step >= MAX_STEP]game_ends -> Skip []
 //          					     					|   |   |   |   |   |   |   aggregated_gk
 //                                   					|   |   |   |   |   |   |   |
 HomeFor = [step >= MAX_STEP]game_ends -> Skip []
-          [step <  MAX_STEP && pos[CR] == 1]HomeForPass(65, 58, 67, 53, 75, 19, 52, 72, CR) []
-          [step <  MAX_STEP && pos[CL] == 1]HomeForPass(79, 64, 65, 62, 75, 19, 60, 72, CL);
+          [step <  MAX_STEP && pos[RL] == 1]HomeForPass(77, 75, 74, 77, 92, 17, 73, 71, RL) []
+          [step <  MAX_STEP && pos[C ] == 1]HomeForPass(75, 73, 66, 76, 92, 17, 56, 71, C) []
+          [step <  MAX_STEP && pos[LR] == 1]HomeForPass(73, 65, 65, 69, 92, 17, 79, 71, LR);
 
 
 ///////////// Individual Positions /////////////

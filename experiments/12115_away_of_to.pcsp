@@ -362,12 +362,12 @@ HomeForPass(
 				};
 
 AwayKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ home_team_score++ } -> Skip
 							};
 
 HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
-								aggregated_gk: save -> Skip
+								aggregated_gk: save  -> Skip
 								100 - aggregated_gk: concede{ away_team_score++ } -> Skip
 							};
 
@@ -387,11 +387,9 @@ HomeSimulatePenaltyKick(
 		aggregated_gk: saved -> Skip
 	};
 
-// openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
-openPos() = setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
+openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
 
-// UpdatePos(position, e) = incStep{step++} -> case {
-UpdatePos(position, e) = case {
+UpdatePos(position, e) = incStep{step++} -> case {
 	position == L:
 		case {
 			e == SP: {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 0; pos[CR] = 0; pos[RL] = 0; pos[R] = 0;} -> Skip
