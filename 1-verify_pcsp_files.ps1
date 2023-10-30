@@ -21,5 +21,20 @@ foreach ($file in $files) {
     $output = "$outputPath$($file.Name -replace '\.[^.]+$', ".txt")"
     $arguments = "-pcsp `"$input`" `"$output`""
     Write-Host "Verifying: $($file.Name)"
-    $process = Start-Process -FilePath $executablePath -Wait -PassThru -ArgumentList $arguments
+
+    $scriptBlock = {
+        param($arg, $exe)
+        & Start-Process -FilePath $exe -ArgumentList $arg -Wait
+    }
+
+    Start-Job -ScriptBlock $scriptBlock -ArgumentList $arguments, $executablePath
 }
+
+# Wait for all jobs to finish
+Get-Job | Wait-Job
+
+# Retrieve job results if needed (optional)
+# Get-Job | Receive-Job
+
+# Cleanup jobs
+Remove-Job *
