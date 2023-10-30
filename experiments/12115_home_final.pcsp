@@ -821,7 +821,7 @@ AwaySimulatePenaltyKick(
 	aggregated_penalty_kick,
 	aggregated_gk
 ) = penalty_kick -> pcase {
-		aggregated_penalty_kick: goal{ away_team_score++; } -> openPos(); HomeKepAtk
+		aggregated_penalty_kick: goal{ away_team_score++; } -> openPos(); HomeMid
 		aggregated_gk: saved -> UpdatePos(99, 99); HomeKepAtk // continue game
 	};
 
@@ -829,7 +829,7 @@ HomeSimulatePenaltyKick(
 	aggregated_penalty_kick,
 	aggregated_gk
 ) = penalty_kick -> pcase {
-		aggregated_penalty_kick: goal{ home_team_score++; } -> openPos(); AwayKepAtk
+		aggregated_penalty_kick: goal{ home_team_score++; } -> openPos(); AwayMid
 		aggregated_gk: saved ->  UpdatePos(99, 99); AwayKepAtk // continue game
 	};
 
