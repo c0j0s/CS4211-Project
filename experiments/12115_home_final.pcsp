@@ -797,12 +797,12 @@ HomeForPass(
  */
 AwayKepSave(aggregated_gk, position) = attemptSave -> pcase {
 								aggregated_gk: save -> UpdatePos(99, 99); AwayKepAtk
-								100 - aggregated_gk: concede{ home_team_score++ } -> Skip
+								100 - aggregated_gk: concede{ home_team_score++ } -> openPos(); AwayMid // start new game with away team
 							};
 
 HomeKepSave(aggregated_gk, position) = attemptSave -> pcase {
 								aggregated_gk: save -> UpdatePos(99, 99); HomeKepAtk
-								100 - aggregated_gk: concede{ away_team_score++ } -> Skip
+								100 - aggregated_gk: concede{ away_team_score++ } -> openPos(); HomeMid // start new game with home team
 							};
 
 
@@ -822,7 +822,7 @@ AwaySimulatePenaltyKick(
 	aggregated_gk
 ) = penalty_kick -> pcase {
 		aggregated_penalty_kick: goal{ away_team_score++; } -> openPos(); HomeKepAtk
-		aggregated_gk: saved -> Skip
+		aggregated_gk: saved -> UpdatePos(99, 99); AwayKepAtk // continue game
 	};
 
 HomeSimulatePenaltyKick(
@@ -830,7 +830,7 @@ HomeSimulatePenaltyKick(
 	aggregated_gk
 ) = penalty_kick -> pcase {
 		aggregated_penalty_kick: goal{ home_team_score++; } -> openPos(); AwayKepAtk
-		aggregated_gk: saved -> Skip
+		aggregated_gk: saved ->  UpdatePos(99, 99); HomeKepAtk // continue game
 	};
 
 openPos() = incStep{step++} -> setAllToOne {pos[L] = 1; pos[LR] = 1; pos[CL] = 1; pos[C] = 1; pos[CR] = 1; pos[RL] = 1; pos[R] = 1;} -> Skip;
