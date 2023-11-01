@@ -12,7 +12,7 @@ def read_directory(path, extension='.txt'):
 
 def write_csv(file_path, dataset):
     with open(file_path, 'w', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=['match_id', 'prob', 'model'])
+        writer = csv.DictWriter(csv_file, fieldnames=['match_id', 'prob', "prob_min", "prob_max", 'model'])
         writer.writeheader()
         writer.writerows(dataset)
 
@@ -42,12 +42,16 @@ def main():
                 home_dataset.append({
                     "match_id"  :meta[0],
                     "prob"      :probs[0][mode],
+                    "prob_min"      :probs[0]['min'],
+                    "prob_max"      :probs[0]['max'],
                     "model"     :"-".join(meta[2:])
                 })
             else:
                 away_dataset.append({
                     "match_id"  :meta[0],
                     "prob"      :probs[0][mode],
+                    "prob_min"      :probs[0]['min'],
+                    "prob_max"      :probs[0]['max'],
                     "model"     :"-".join(meta[2:])
                 })
             
