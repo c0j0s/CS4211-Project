@@ -6,6 +6,7 @@ path = "./outputs"
 pattern = r"(?<=\[).*(?=\])"
 mode = 'avg'
 output = "./data"
+model = "final"
 
 def read_directory(path, extension='.txt'):
     return [f for f in os.listdir(path) if f.endswith(extension)]
@@ -25,7 +26,6 @@ def main():
     for file in files:
         with open(f'{path}/{file}', 'r') as f:
             meta = file.replace(".txt", "").split("_")
-            print(f'probs of match:{meta[0]} for team {meta[1]} model[{meta[2:]}]:')
             text = f.read()
             matches = re.findall(pattern, text)
             probs_raw = [p.split(",") for p in matches]
@@ -37,23 +37,24 @@ def main():
                     'avg': (float(rates[0]) + float(rates[1])) / 2.0
                 }
                 probs.append(prob)
-            print(f'{meta[1]} -> {probs}')
-            if meta[1] == "home":
-                home_dataset.append({
-                    "match_id"  :meta[0],
-                    "prob"      :probs[0][mode],
-                    "prob_min"      :probs[0]['min'],
-                    "prob_max"      :probs[0]['max'],
-                    "model"     :"-".join(meta[2:])
-                })
-            else:
-                away_dataset.append({
-                    "match_id"  :meta[0],
-                    "prob"      :probs[0][mode],
-                    "prob_min"      :probs[0]['min'],
-                    "prob_max"      :probs[0]['max'],
-                    "model"     :"-".join(meta[2:])
-                })
+            print(f'match:{meta[0]}[away]: {mode}[{probs[0][mode]}] min[{probs[0]["min"]}] max[{probs[0]["max"]}]')
+            print(f'match:{meta[0]}[home]: {mode}[{probs[1][mode]}] min[{probs[1]["min"]}] max[{probs[1]["max"]}]')
+            
+            home_dataset.append({
+                "match_id"  :meta[0],
+                "prob"      :probs[0][mode],
+                "prob_min"  :probs[0]['min'],
+                "prob_max"  :probs[0]['max'],
+                "model"     :model
+            })
+        
+            away_dataset.append({
+                "match_id"  :meta[0],
+                "prob"      :probs[1][mode],
+                "prob_min"  :probs[1]['min'],
+                "prob_max"  :probs[1]['max'],
+                "model"     :model
+            })
             
     write_csv(f'{output}/away_probs.csv', away_dataset)
     write_csv(f'{output}/home_probs.csv', home_dataset)
