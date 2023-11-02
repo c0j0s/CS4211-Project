@@ -888,14 +888,14 @@ UpdatePos(position, e) = incStep{step++} -> case {
 // #define Goal2 danger <= 2;
 // #define Goal3 danger <= 3;
 // #define Goal4 danger <= 4;
-#define away_team_wins away_team_score > home_team_score && step < MAX_STEP;
-#define home_team_wins away_team_score < home_team_score && step < MAX_STEP;
-#define game_ends_in_draw away_team_score == home_team_score && step < MAX_STEP;
+#define away_team_wins away_team_score > home_team_score && step == MAX_STEP;
+#define home_team_wins away_team_score < home_team_score && step == MAX_STEP;
+#define game_ends_in_draw away_team_score == home_team_score && step == MAX_STEP;
 
 #assert StartGame deadlockfree;
 #assert StartGame reaches away_team_wins with prob;
 #assert StartGame reaches home_team_wins with prob;
-#assert StartGame |= F G game_ends_in_draw with prob;
+#assert StartGame reaches game_ends_in_draw with prob;
 
 // G == Globally: has to hold on the entire subsequent path
 // F == Finally: eventually has to hold (somewhere on the subsequent path)
