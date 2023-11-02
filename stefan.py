@@ -229,7 +229,7 @@ def main():
                 match_url = match.name
                 match_id = get_match_id(match_url)
 
-                with open(f"./out_{match_id}.pcsp", "w") as output_file:
+                with open(f"./inputs/{match_id}.pcsp", "w") as output_file:
                     output_file.writelines(output)
 
 
