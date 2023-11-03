@@ -13,7 +13,7 @@ import pandas as pd
 def simulate_betting(season):
     df_betting = pd.read_csv(f"betting_dataset/{season}.csv")
     df_original = pd.read_csv(f"original_probabilities/{season}.csv")
-    df_new = pd.read_csv(f"new_probabilities/{season}.csv")
+    df_new = pd.read_csv(f"merged/{season} copy.csv") #change this to new_probabilities folder
 
     # bet $100 for every match
     original_net, new_net = 0, 0
@@ -57,6 +57,6 @@ def simulate_betting(season):
     print(f"season {season} net profit (original, new): (${original_net}, ${new_net})")
 
 if __name__ == "__main__":
-    seasons = [1516, 1617, 1718, 1819, 1920, 2021]
+    seasons = [1516] #, 1617, 1718, 1819, 1920, 2021
     for season in seasons:
         simulate_betting(season)
