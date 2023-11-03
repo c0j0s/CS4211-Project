@@ -10,16 +10,16 @@ System Abstraction: False
 
 
 ********Verification Statistics********
-Visited States:459610
-Total Transitions:616608
-Time Used:5.5049254s
-Estimated Memory Used:12736.992KB
+Visited States:482024
+Total Transitions:638401
+Time Used:5.0358044s
+Estimated Memory Used:11524.6KB
 
 
 =======================================================
 Assertion: StartGame() reaches away_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.25996, 0.78808];
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.14855, 0.4072];
 
 ********Verification Setting********
 Admissible Behavior: All
@@ -29,17 +29,17 @@ Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:451452
-Total Transitions:603880
-MDP Iterations:4105605
-Time Used:17.0530648s
-Estimated Memory Used:460033.664KB
+Visited States:473252
+Total Transitions:624733
+MDP Iterations:4563716
+Time Used:15.6033985s
+Estimated Memory Used:478196KB
 
 
 =======================================================
 Assertion: StartGame() reaches home_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() reaches home_team_wins with prob) is Valid with Probability [0.05318, 0.37631];
+The Assertion (StartGame() reaches home_team_wins with prob) is Valid with Probability [0.11582, 0.35341];
 
 ********Verification Setting********
 Admissible Behavior: All
@@ -49,17 +49,17 @@ Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:451562
-Total Transitions:604056
-MDP Iterations:3893735
-Time Used:13.6057361s
-Estimated Memory Used:453201.152KB
+Visited States:473320
+Total Transitions:624869
+MDP Iterations:4574208
+Time Used:13.5827164s
+Estimated Memory Used:324593.12KB
 
 
 =======================================================
 Assertion: StartGame() reaches game_ends_in_draw with prob
 ********Verification Result********
-The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.10205, 0.56978];
+The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.37901, 0.66681];
 
 ********Verification Setting********
 Admissible Behavior: All
@@ -69,10 +69,10 @@ Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:456770
-Total Transitions:612180
-MDP Iterations:3665593
-Time Used:17.3374149s
-Estimated Memory Used:438803.296KB
+Visited States:478948
+Total Transitions:633621
+MDP Iterations:4266248
+Time Used:13.6986789s
+Estimated Memory Used:469152.768KB
 
 
