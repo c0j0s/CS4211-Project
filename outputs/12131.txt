@@ -1,0 +1,18 @@
+=======================================================
+Assertion: StartGame() deadlockfree
+********Verification Result********
+The Assertion (StartGame() deadlockfree) is VALID.
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: First Witness Trace using Depth First Search
+System Abstraction: False
+
+
+********Verification Statistics********
+Visited States:459610
+Total Transitions:616608
+Time Used:5.5049254s
+Estimated Memory Used:12736.992KB
+
+
