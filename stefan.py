@@ -1,9 +1,7 @@
-import pandas as pd
+import os
 from typing import *
 
-# TODO:
-# import os
-
+import pandas as pd
 
 POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
 RATINGS: pd.DataFrame = None
@@ -18,9 +16,7 @@ def main():
     with open("./template.pcsp", "r") as pcsp_template_file:
         pcsp_template_lines = pcsp_template_file.readlines()
 
-        # TODO:
-        # csv_filenames = os.listdir("./Datasets/matches")
-        csv_filenames = ["epl_matches_20152016.csv"]
+        csv_filenames = os.listdir("./Datasets/matches")
 
         for csv_filename in csv_filenames:
             year_id = get_year_id_from_filename(csv_filename)
@@ -89,8 +85,6 @@ def main():
                 output.extend(pcsp_template_lines[28 - 1 : 35 - 1])
 
                 output.append("\n")
-
-                # TODO: add the various functions that we've created
 
                 # AwayKepAtk
                 output.extend(
