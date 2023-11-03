@@ -11,6 +11,10 @@ MATCHES: pd.DataFrame = None
 
 
 def main():
+    # allow for modification of global variables
+    global RATINGS
+    global MATCHES
+
     with open("./template.pcsp", "r") as pcsp_template_file:
         pcsp_template_lines = pcsp_template_file.readlines()
 
@@ -37,10 +41,7 @@ def main():
             RATINGS.set_index("sofifa_id", inplace=True)
             MATCHES.set_index("match_url", inplace=True)
 
-            # TODO:
-            # for i in range(len(MATCHES)):
-
-            for i in range(1):
+            for i in range(len(MATCHES)):
                 match = MATCHES.iloc[i]
 
                 away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
@@ -140,7 +141,7 @@ def main():
                         ),
                     )
                 )
-                
+
                 output.append("\n")
 
                 # AwayFor
@@ -153,7 +154,7 @@ def main():
                         ),
                     )
                 )
-                
+
                 output.append("\n")
 
                 # =====
@@ -207,7 +208,7 @@ def main():
                         ),
                     )
                 )
-                
+
                 output.append("\n")
 
                 # HomeFor
@@ -220,7 +221,7 @@ def main():
                         ),
                     )
                 )
-                
+
                 output.append("\n")
 
                 # lines 80 to the end
@@ -229,7 +230,9 @@ def main():
                 match_url = match.name
                 match_id = get_match_id(match_url)
 
-                with open(f"./inputs/{match_id}.pcsp", "w") as output_file:
+                # if the following line fails, please create the `./stefan-pcsp/` folder first
+                # before running the python script
+                with open(f"./stefan-pcsp/{match_id}.pcsp", "w") as output_file:
                     output_file.writelines(output)
 
 
@@ -610,6 +613,13 @@ def convert_formation_to_formation_numbers(formation: str):
     """
     formation_strings = formation.split("-")
     formation_numbers = list(map(lambda x: int(x), formation_strings))
+
+    # hot fix for https://www.premierleague.com/match/12149
+    # in the CSV dataset, the away team has formation "4-2-4-0" for some reason
+    if len(formation_numbers) == 4 and formation_numbers[-1] == 0:
+        # remove the last trailing zero
+        formation_numbers = formation_numbers[:-1]
+
     return formation_numbers
 
 
@@ -842,15 +852,18 @@ def get_GenericMidPass_parameters(
 
     our_midfielder_parameters = []
     for position, sofifa_id in our_midfielder_sofifa_id.items():
-        our_midfielder_parameters.append((position,
+        tple = (
+            position,
             convert_parameters_to_parameters_string(
                 get_attacking_short_passing(sofifa_id),
                 get_skill_long_passing(sofifa_id),
                 get_power_long_shots(sofifa_id),
                 opponent_aggregated_defending,
                 position,
-            ))
+            ),
         )
+
+        our_midfielder_parameters.append(tple)
 
     return our_midfielder_parameters
 
@@ -930,8 +943,8 @@ def get_GenericForPass_parameters(
             opponent_aggregated_gk,
             POSITIONS[i],
         )
-        
-        tple = (positions[i], params_string)
+
+        tple = (POSITIONS[i], params_string)
 
         our_forward_stats_combined.append(tple)
 
