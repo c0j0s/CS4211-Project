@@ -1,0 +1,78 @@
+=======================================================
+Assertion: StartGame() deadlockfree
+********Verification Result********
+The Assertion (StartGame() deadlockfree) is VALID.
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: First Witness Trace using Depth First Search
+System Abstraction: False
+
+
+********Verification Statistics********
+Visited States:517757
+Total Transitions:685146
+Time Used:4.9386098s
+Estimated Memory Used:16784.912KB
+
+
+=======================================================
+Assertion: StartGame() reaches away_team_wins with prob
+********Verification Result********
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.13577, 0.40969];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+
+********Verification Statistics********
+Visited States:508649
+Total Transitions:670780
+MDP Iterations:5000093
+Time Used:19.4977354s
+Estimated Memory Used:328182.784KB
+
+
+=======================================================
+Assertion: StartGame() reaches home_team_wins with prob
+********Verification Result********
+The Assertion (StartGame() reaches home_team_wins with prob) is Valid with Probability [0.14382, 0.3836];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+
+********Verification Statistics********
+Visited States:508471
+Total Transitions:670526
+MDP Iterations:4943145
+Time Used:22.4952317s
+Estimated Memory Used:513748KB
+
+
+=======================================================
+Assertion: StartGame() reaches game_ends_in_draw with prob
+********Verification Result********
+The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.35964, 0.63583];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+
+********Verification Statistics********
+Visited States:514543
+Total Transitions:680084
+MDP Iterations:4625305
+Time Used:22.227326s
+Estimated Memory Used:362638.08KB
+
+
