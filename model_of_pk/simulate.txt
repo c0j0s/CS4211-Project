@@ -1,0 +1,9 @@
+season 1516 net profit (original, new, difference): ($-3020.0, $-4727.0, $-1707.0)
+season 1617 net profit (original, new, difference): ($-373.0, $27.00000000000003, $400.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5910.0, $-3775.0)
+season 1819 net profit (original, new, difference): ($920.0, $1873.0, $953.0)
+season 1920 net profit (original, new, difference): ($1199.0, $252.9999999999999, $-946.0000000000001)
+season 2021 net profit (original, new, difference): ($1182.0, $343.0, $-839.0)
+Original total: -2227.0
+New total: -8141.0
+Difference: -5914.0
