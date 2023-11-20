@@ -2,10 +2,10 @@
 import pandas as pd
 import os
 
-betting_input='betting_simulation/betting_dataset/'
-new_prob_input='betting_simulation/new_probabilities/'
-original_prob_input='betting_simulation/original_probabilities/'
-output='betting_simulation/merged/'
+betting_input='../betting_simulation/betting_dataset/'
+original_prob_input='../betting_simulation/original_probabilities/'
+new_prob_input='./new_probabilities/'
+output='./merged/'
 
 description = [
     'home_win',
@@ -28,6 +28,9 @@ files = set([
 ])
 
 # %%
+if not os.path.exists(output):
+    os.makedirs(output)
+
 for file in files:
     df_betting  = pd.read_csv(f'{betting_input}/{file}' )
     df_new_prob = pd.read_csv(f'{new_prob_input}/{file}')
@@ -41,6 +44,3 @@ for file in files:
     merged_df['delta'] = merged_df['new_home_prob_softmax'].astype(float) - merged_df['original_home_prob_softmax'].astype(float)
 
     write_csv(f'{output}/{file}', merged_df[['match_url', 'new_home_prob_softmax', 'original_home_prob_softmax', 'result', 'desc', 'delta']])
-
-
-# %%

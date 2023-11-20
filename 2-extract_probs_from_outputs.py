@@ -5,8 +5,8 @@ import csv
 path = "./outputs"
 pattern = r"(?<=\[).*(?=\])"
 mode = 'avg'
-output = "./data"
-model = "final"
+# output = "./data"
+model = input("model: ")
 
 def read_directory(path, extension='.txt'):
     return [f for f in os.listdir(path) if f.endswith(extension)]
@@ -37,8 +37,8 @@ def main():
                     'avg': (float(rates[0]) + float(rates[1])) / 2.0
                 }
                 probs.append(prob)
-            print(f'match:{meta[0]}[away]: {mode}[{probs[0][mode]}] min[{probs[0]["min"]}] max[{probs[0]["max"]}]')
-            print(f'match:{meta[0]}[home]: {mode}[{probs[1][mode]}] min[{probs[1]["min"]}] max[{probs[1]["max"]}]')
+            print(f'match:{meta[0]}[home]: {mode}[{probs[0][mode]}] min[{probs[0]["min"]}] max[{probs[0]["max"]}]')
+            # print(f'match:{meta[0]}[home]: {mode}[{probs[1][mode]}] min[{probs[1]["min"]}] max[{probs[1]["max"]}]')
             
             home_dataset.append({
                 "match_id"  :meta[0],
@@ -48,16 +48,16 @@ def main():
                 "model"     :model
             })
         
-            away_dataset.append({
-                "match_id"  :meta[0],
-                "prob"      :probs[1][mode],
-                "prob_min"  :probs[1]['min'],
-                "prob_max"  :probs[1]['max'],
-                "model"     :model
-            })
+            # away_dataset.append({
+            #     "match_id"  :meta[0],
+            #     "prob"      :probs[1][mode],
+            #     "prob_min"  :probs[1]['min'],
+            #     "prob_max"  :probs[1]['max'],
+            #     "model"     :model
+            # })
             
-    write_csv(f'{output}/away_probs.csv', away_dataset)
-    write_csv(f'{output}/home_probs.csv', home_dataset)
+    # write_csv(f'{output}/away_probs.csv', away_dataset)
+    write_csv(f'./home_probs.csv', home_dataset)
 
 if __name__ == '__main__':
     main()

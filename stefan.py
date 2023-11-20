@@ -7,13 +7,15 @@ POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
 RATINGS: pd.DataFrame = None
 MATCHES: pd.DataFrame = None
 
+template='experiments/template_of_pk.pcsp'
+output_path='model_of_pk/inputs'
 
 def main():
     # allow for modification of global variables
     global RATINGS
     global MATCHES
 
-    with open("./template.pcsp", "r") as pcsp_template_file:
+    with open(f"./{template}", "r") as pcsp_template_file:
         pcsp_template_lines = pcsp_template_file.readlines()
 
         csv_filenames = os.listdir("./Datasets/matches")
@@ -226,7 +228,8 @@ def main():
 
                 # if the following line fails, please create the `./stefan-pcsp/` folder first
                 # before running the python script
-                with open(f"./stefan-pcsp/{match_id}.pcsp", "w") as output_file:
+                with open(f"./{output_path}/{match_id}.pcsp", "w") as output_file:
+                    print(f"Generating ./{output_path}/{match_id}.pcsp")
                     output_file.writelines(output)
 
 

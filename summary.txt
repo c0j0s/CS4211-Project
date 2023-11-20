@@ -1,0 +1,77 @@
+
+# of
+season 1516 net profit (original, new, difference): ($-3020.0, $-5095.0, $-2075.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-1497.0, $-1124.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5570.0, $-3435.0)
+season 1819 net profit (original, new, difference): ($920.0, $2067.0, $1147.0)
+season 1920 net profit (original, new, difference): ($1199.0, $369.9999999999999, $-829.0000000000001)
+season 2021 net profit (original, new, difference): ($1182.0, $692.0, $-490.0)
+Original total: -2227.0
+New total: -9033.0
+Difference: -6806.0
+
+# of_ko
+season 1516 net profit (original, new, difference): ($-3020.0, $-5117.0, $-2097.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-128.99999999999997, $244.00000000000003)
+season 1718 net profit (original, new, difference): ($-2135.0, $-4967.0, $-2832.0)
+season 1819 net profit (original, new, difference): ($920.0, $1128.0, $208.0)
+season 1920 net profit (original, new, difference): ($1199.0, $1132.0, $-67.0)
+season 2021 net profit (original, new, difference): ($1182.0, $511.0, $-671.0)
+Original total: -2227.0
+New total: -7442.0
+Difference: -5215.0
+
+# of_pk
+season 1516 net profit (original, new, difference): ($-3020.0, $-4727.0, $-1707.0)
+season 1617 net profit (original, new, difference): ($-373.0, $27.00000000000003, $400.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5910.0, $-3775.0)
+season 1819 net profit (original, new, difference): ($920.0, $1873.0, $953.0)
+season 1920 net profit (original, new, difference): ($1199.0, $252.9999999999999, $-946.0000000000001)
+season 2021 net profit (original, new, difference): ($1182.0, $343.0, $-839.0)
+Original total: -2227.0
+New total: -8141.0
+Difference: -5914.0
+
+# of_to
+season 1516 net profit (original, new, difference): ($-3020.0, $1070.0, $4090.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-2812.0, $-2439.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5089.0, $-2954.0)
+season 1819 net profit (original, new, difference): ($920.0, $-2756.0, $-3676.0)
+season 1920 net profit (original, new, difference): ($1199.0, $-1900.0, $-3099.0)
+season 2021 net profit (original, new, difference): ($1182.0, $872.0, $-310.0)
+Original total: -2227.0
+New total: -10615.0
+Difference: -8388.0
+
+# of_to_sc
+season 1516 net profit (original, new, difference): ($-3020.0, $235.0, $3255.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-6759.0, $-6386.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5742.0, $-3607.0)
+season 1819 net profit (original, new, difference): ($920.0, $-427.0, $-1347.0)
+season 1920 net profit (original, new, difference): ($1199.0, $-1638.0, $-2837.0)
+season 2021 net profit (original, new, difference): ($1182.0, $3341.0, $2159.0)
+Original total: -2227.0
+New total: -10990.0
+Difference: -8763.0
+
+# of_to_sc_ko
+season 1516 net profit (original, new, difference): ($-3020.0, $235.0, $3255.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-6759.0, $-6386.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5742.0, $-3607.0)
+season 1819 net profit (original, new, difference): ($920.0, $-427.0, $-1347.0)
+season 1920 net profit (original, new, difference): ($1199.0, $-1638.0, $-2837.0)
+season 2021 net profit (original, new, difference): ($1182.0, $3341.0, $2159.0)
+Original total: -2227.0
+New total: -10990.0
+Difference: -8763.0
+
+# final (of_to_sc_ko_pk)
+season 1516 net profit (original, new, difference): ($-3020.0, $235.0, $3255.0)
+season 1617 net profit (original, new, difference): ($-373.0, $-6759.0, $-6386.0)
+season 1718 net profit (original, new, difference): ($-2135.0, $-5742.0, $-3607.0)
+season 1819 net profit (original, new, difference): ($920.0, $-427.0, $-1347.0)
+season 1920 net profit (original, new, difference): ($1199.0, $-1638.0, $-2837.0)
+season 2021 net profit (original, new, difference): ($1182.0, $3341.0, $2159.0)
+Original total: -2227.0
+New total: -10990.0
+Difference: -8763.0
