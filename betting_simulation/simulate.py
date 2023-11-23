@@ -13,7 +13,8 @@ import pandas as pd
 def simulate_betting(season):
     df_betting = pd.read_csv(f"betting_dataset/{season}.csv")
     df_original = pd.read_csv(f"original_probabilities/{season}.csv")
-    df_new = pd.read_csv(f"new_probabilities/{season}.csv") #change this to new_probabilities folder
+    df_new = pd.read_csv(f"stefan-softmax-experiments/{season}.csv")
+    # df_new = pd.read_csv(f"new_probabilities/{season}.csv") #change this to new_probabilities folder
 
     # bet $100 for every match
     original_net, new_net = 0, 0

@@ -1,0 +1,64 @@
+// MAX_STEP = 10
+
+********Verification Result********
+The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.55014, 0.76829];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+********Verification Statistics********
+Visited States:57353
+Total Transitions:75902
+MDP Iterations:214559
+Time Used:1.1793922s
+Estimated Memory Used:65624.264KB
+
+********Verification Result********
+The Assertion (StartGame() reaches home_team_wins with prob) is Valid with Probability [0.08525, 0.22899];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+********Verification Statistics********
+Visited States:57179
+Total Transitions:75646
+MDP Iterations:161536
+Time Used:1.0689812s
+Estimated Memory Used:66912.376KB
+
+********Verification Result********
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.11832, 0.28297];
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: Graph-based Probability Computation Based on Value Iteration
+System Abstraction: False
+Maximum difference threshold : 1E-06
+
+********Verification Statistics********
+Visited States:57187
+Total Transitions:75672
+MDP Iterations:164404
+Time Used:1.0710374s
+Estimated Memory Used:66743.4KB
+
+********Verification Result********
+The Assertion (StartGame() deadlockfree) is VALID.
+
+********Verification Setting********
+Admissible Behavior: All
+Search Engine: First Witness Trace using Depth First Search
+System Abstraction: False
+
+********Verification Statistics********
+Visited States:58869
+Total Transitions:78250
+Time Used:0.728036s
+Estimated Memory Used:11805.944KB
+
