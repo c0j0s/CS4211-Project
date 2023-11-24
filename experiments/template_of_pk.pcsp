@@ -438,7 +438,7 @@ UpdatePos(position, e) = incStep -> case {
 #define home_team_wins away_team_score < home_team_score;
 #define game_ends_in_draw away_team_score == home_team_score;
 
-#assert StartGame deadlockfree;
-// #assert StartGame reaches away_team_wins with prob;
+// #assert StartGame deadlockfree;
+#assert StartGame reaches away_team_wins with prob;
 #assert StartGame reaches home_team_wins with prob;
 // #assert StartGame reaches game_ends_in_draw with prob;
