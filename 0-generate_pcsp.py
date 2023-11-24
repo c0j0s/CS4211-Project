@@ -2,235 +2,249 @@ import os
 from typing import *
 
 import pandas as pd
+import os
 
 POSITIONS = ["L", "LR", "CL", "C", "CR", "RL", "R"]
 RATINGS: pd.DataFrame = None
 MATCHES: pd.DataFrame = None
 
 template='experiments/template_of_pk.pcsp'
-output_path='model_of_pk/inputs'
+
+model_pattern = './model/model_*/' 
+model_folders = './experiments'
+
 
 def main():
     # allow for modification of global variables
     global RATINGS
     global MATCHES
 
-    with open(f"./{template}", "r") as pcsp_template_file:
-        pcsp_template_lines = pcsp_template_file.readlines()
+    # list of model templates
+    models = [f for f in os.listdir(model_folders) if f.endswith('.pcsp')]
 
-        csv_filenames = os.listdir("./Datasets/matches")
+    # iterate experiment folder for model templates
+    for model_filename in models:
+        print(f'Generating pcsp for {model_filename}')
+        model_name = model_filename.split('.')[0].replace('template','model')
+        output_path=f'models/{model_name}/inputs'
 
-        for csv_filename in csv_filenames:
-            year_id = get_year_id_from_filename(csv_filename)
+        # iterate dataset to generate pcsp files for all matches 
+        with open(f'{model_folders}/{model_filename}', "r") as pcsp_template_file:
+            pcsp_template_lines = pcsp_template_file.readlines()
 
-            RATINGS = pd.read_csv(f"./Datasets/ratings/epl_ratings_{year_id}.csv")
-            MATCHES = pd.read_csv(f"./Datasets/matches/epl_matches_{year_id}.csv")
+            csv_filenames = os.listdir("./Datasets/matches")
 
-            # the first column is the row number (0-indexed)
-            # drop the first column since we don't need it
-            RATINGS.drop(columns=RATINGS.columns[0], axis=1, inplace=True)
-            MATCHES.drop(columns=MATCHES.columns[0], axis=1, inplace=True)
+            for csv_filename in csv_filenames:
+                year_id = get_year_id_from_filename(csv_filename)
 
-            # fill in all empty cells with 0 (e.g., defenders have blank gk_* stats)
-            RATINGS.fillna(0, inplace=True)
-            MATCHES.fillna(0, inplace=True)
+                RATINGS = pd.read_csv(f"./Datasets/ratings/epl_ratings_{year_id}.csv")
+                MATCHES = pd.read_csv(f"./Datasets/matches/epl_matches_{year_id}.csv")
 
-            # speed up indexing into dataframe
-            RATINGS.set_index("sofifa_id", inplace=True)
-            MATCHES.set_index("match_url", inplace=True)
+                # the first column is the row number (0-indexed)
+                # drop the first column since we don't need it
+                RATINGS.drop(columns=RATINGS.columns[0], axis=1, inplace=True)
+                MATCHES.drop(columns=MATCHES.columns[0], axis=1, inplace=True)
 
-            for i in range(len(MATCHES)):
-                match = MATCHES.iloc[i]
+                # fill in all empty cells with 0 (e.g., defenders have blank gk_* stats)
+                RATINGS.fillna(0, inplace=True)
+                MATCHES.fillna(0, inplace=True)
 
-                away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
-                home_df_sofifa_ids = get_df_sofifa_ids(match, "home")
+                # speed up indexing into dataframe
+                RATINGS.set_index("sofifa_id", inplace=True)
+                MATCHES.set_index("match_url", inplace=True)
 
-                output: list[str] = []
+                for i in range(len(MATCHES)):
+                    match = MATCHES.iloc[i]
 
-                # lines 1 to 17
-                output.extend(pcsp_template_lines[1 - 1 : 17 - 1])
+                    away_df_sofifa_ids = get_df_sofifa_ids(match, "away")
+                    home_df_sofifa_ids = get_df_sofifa_ids(match, "home")
 
-                output.append("\n")
+                    output: list[str] = []
 
-                # lines 18 to 27
-                output.append(
-                    f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
-                )
-                output.append(
-                    f"var awayMidPos = {get_pos_array_string(away_df_sofifa_ids, row='mid')};\n"
-                )
-                output.append(
-                    f"var awayDefPos = {get_pos_array_string(away_df_sofifa_ids, row='def')};\n"
-                )
-                output.append(
-                    f"var awayKepPos = {get_pos_array_string(away_df_sofifa_ids, row='kep')};\n"
-                )
+                    # lines 1 to 17
+                    output.extend(pcsp_template_lines[1 - 1 : 17 - 1])
 
-                output.append("\n")
+                    output.append("\n")
 
-                output.append(
-                    f"var homeForPos = {get_pos_array_string(home_df_sofifa_ids, row='for')};\n"
-                )
-                output.append(
-                    f"var homeMidPos = {get_pos_array_string(home_df_sofifa_ids, row='mid')};\n"
-                )
-                output.append(
-                    f"var homeDefPos = {get_pos_array_string(home_df_sofifa_ids, row='def')};\n"
-                )
-                output.append(
-                    f"var homeKepPos = {get_pos_array_string(home_df_sofifa_ids, row='kep')};\n"
-                )
-
-                output.append("\n")
-
-                # lines 28 to 35
-                output.extend(pcsp_template_lines[28 - 1 : 35 - 1])
-
-                output.append("\n")
-
-                # AwayKepAtk
-                output.extend(
-                    generate_pcsp_actions(
-                        "AwayKepAtk",
-                        "AwayKepPass",
-                        get_KepPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                        ),
+                    # lines 18 to 27
+                    output.append(
+                        f"var awayForPos = {get_pos_array_string(away_df_sofifa_ids, row='for')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # AwayKepDef
-                output.extend(
-                    generate_pcsp_actions(
-                        "AwayKepDef",
-                        "AwayKepSave",
-                        get_KepSave_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                        ),
+                    output.append(
+                        f"var awayMidPos = {get_pos_array_string(away_df_sofifa_ids, row='mid')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # AwayDef
-                output.extend(
-                    generate_pcsp_actions(
-                        "AwayDef",
-                        "AwayDefPass",
-                        get_DefPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                        ),
+                    output.append(
+                        f"var awayDefPos = {get_pos_array_string(away_df_sofifa_ids, row='def')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # AwayMid
-                output.extend(
-                    generate_pcsp_actions(
-                        "AwayMid",
-                        "AwayMidPass",
-                        get_MidPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                        ),
+                    output.append(
+                        f"var awayKepPos = {get_pos_array_string(away_df_sofifa_ids, row='kep')};\n"
                     )
-                )
 
-                output.append("\n")
+                    output.append("\n")
 
-                # AwayFor
-                output.extend(
-                    generate_pcsp_actions(
-                        "AwayFor",
-                        "AwayForPass",
-                        get_ForPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
-                        ),
+                    output.append(
+                        f"var homeForPos = {get_pos_array_string(home_df_sofifa_ids, row='for')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # =====
-
-                # HomeKepAtk
-                output.extend(
-                    generate_pcsp_actions(
-                        "HomeKepAtk",
-                        "HomeKepPass",
-                        get_KepPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                        ),
+                    output.append(
+                        f"var homeMidPos = {get_pos_array_string(home_df_sofifa_ids, row='mid')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # HomeKepDef
-                output.extend(
-                    generate_pcsp_actions(
-                        "HomeKepDef",
-                        "HomeKepSave",
-                        get_KepSave_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                        ),
+                    output.append(
+                        f"var homeDefPos = {get_pos_array_string(home_df_sofifa_ids, row='def')};\n"
                     )
-                )
-
-                output.append("\n")
-
-                # HomeDef
-                output.extend(
-                    generate_pcsp_actions(
-                        "HomeDef",
-                        "HomeDefPass",
-                        get_DefPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                        ),
+                    output.append(
+                        f"var homeKepPos = {get_pos_array_string(home_df_sofifa_ids, row='kep')};\n"
                     )
-                )
 
-                output.append("\n")
+                    output.append("\n")
 
-                # HomeMid
-                output.extend(
-                    generate_pcsp_actions(
-                        "HomeMid",
-                        "HomeMidPass",
-                        get_MidPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                        ),
+                    # lines 28 to 35
+                    output.extend(pcsp_template_lines[28 - 1 : 35 - 1])
+
+                    output.append("\n")
+
+                    # AwayKepAtk
+                    output.extend(
+                        generate_pcsp_actions(
+                            "AwayKepAtk",
+                            "AwayKepPass",
+                            get_KepPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                            ),
+                        )
                     )
-                )
 
-                output.append("\n")
+                    output.append("\n")
 
-                # HomeFor
-                output.extend(
-                    generate_pcsp_actions(
-                        "HomeFor",
-                        "HomeForPass",
-                        get_ForPass_parameters(
-                            away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
-                        ),
+                    # AwayKepDef
+                    output.extend(
+                        generate_pcsp_actions(
+                            "AwayKepDef",
+                            "AwayKepSave",
+                            get_KepSave_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                            ),
+                        )
                     )
-                )
 
-                output.append("\n")
+                    output.append("\n")
 
-                # lines 80 to the end
-                output.extend(pcsp_template_lines[80 - 1 :])
+                    # AwayDef
+                    output.extend(
+                        generate_pcsp_actions(
+                            "AwayDef",
+                            "AwayDefPass",
+                            get_DefPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                            ),
+                        )
+                    )
 
-                match_url = match.name
-                match_id = get_match_id(match_url)
+                    output.append("\n")
 
-                # if the following line fails, please create the `./stefan-pcsp/` folder first
-                # before running the python script
-                with open(f"./{output_path}/{match_id}.pcsp", "w") as output_file:
-                    print(f"Generating ./{output_path}/{match_id}.pcsp")
-                    output_file.writelines(output)
+                    # AwayMid
+                    output.extend(
+                        generate_pcsp_actions(
+                            "AwayMid",
+                            "AwayMidPass",
+                            get_MidPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # AwayFor
+                    output.extend(
+                        generate_pcsp_actions(
+                            "AwayFor",
+                            "AwayForPass",
+                            get_ForPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="away"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # =====
+
+                    # HomeKepAtk
+                    output.extend(
+                        generate_pcsp_actions(
+                            "HomeKepAtk",
+                            "HomeKepPass",
+                            get_KepPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # HomeKepDef
+                    output.extend(
+                        generate_pcsp_actions(
+                            "HomeKepDef",
+                            "HomeKepSave",
+                            get_KepSave_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # HomeDef
+                    output.extend(
+                        generate_pcsp_actions(
+                            "HomeDef",
+                            "HomeDefPass",
+                            get_DefPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # HomeMid
+                    output.extend(
+                        generate_pcsp_actions(
+                            "HomeMid",
+                            "HomeMidPass",
+                            get_MidPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # HomeFor
+                    output.extend(
+                        generate_pcsp_actions(
+                            "HomeFor",
+                            "HomeForPass",
+                            get_ForPass_parameters(
+                                away_df_sofifa_ids, home_df_sofifa_ids, our_team="home"
+                            ),
+                        )
+                    )
+
+                    output.append("\n")
+
+                    # lines 80 to the end
+                    output.extend(pcsp_template_lines[80 - 1 :])
+
+                    match_url = match.name
+                    match_id = get_match_id(match_url)
+
+                    # if the following line fails, please create the `./stefan-pcsp/` folder first
+                    # before running the python script
+                    with open(f"./{output_path}/{match_id}.pcsp", "w") as output_file:
+                        print(f"Generating ./{output_path}/{match_id}.pcsp")
+                        output_file.writelines(output)
 
 
 def get_df_sofifa_ids(match: pd.Series, team: Literal["away", "home"]):

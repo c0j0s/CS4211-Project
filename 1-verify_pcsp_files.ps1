@@ -17,7 +17,7 @@ if ($files.Count -eq 0) {
 if (-not (Test-Path -Path $outputPath -PathType Container)) {
     New-Item -Path $outputPath -ItemType Directory
 }
-
+$startTime = Get-Date
 $Job = $files | ForEach-Object -Parallel { 
     $executablePath = "C:\Program Files\Process Analysis Toolkit\Process Analysis Toolkit 3.5.1\PAT3.Console.exe"
     $input = "$(Get-Location)\inputs\$($_.Name)"
@@ -28,3 +28,6 @@ $Job = $files | ForEach-Object -Parallel {
     Start-Process -FilePath $executablePath -ArgumentList $arguments -Wait
  } -ThrottleLimit $thread -AsJob 
 $job | Receive-Job -Wait -AutoRemoveJob
+$endTime = Get-Date
+$elapsedTime = $endTime - $startTime
+Write-Host "Count: $($files.Count) Elapsed Time: $elapsedTime"
