@@ -1,19 +1,21 @@
 =======================================================
-Assertion: StartGame() deadlockfree
+Assertion: StartGame() reaches away_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() deadlockfree) is VALID.
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.12702, 0.42143];
 
 ********Verification Setting********
 Admissible Behavior: All
-Search Engine: First Witness Trace using Depth First Search
+Search Engine: Graph-based Probability Computation Based on Value Iteration
 System Abstraction: False
+Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:358808
-Total Transitions:461560
-Time Used:4.6669742s
-Estimated Memory Used:16966.824KB
+Visited States:351282
+Total Transitions:449944
+MDP Iterations:1945310
+Time Used:10.0008058s
+Estimated Memory Used:296847.712KB
 
 
 =======================================================
@@ -32,27 +34,7 @@ Maximum difference threshold : 1E-06
 Visited States:352087
 Total Transitions:451207
 MDP Iterations:1763863
-Time Used:9.4741574s
-Estimated Memory Used:289732.16KB
-
-
-=======================================================
-Assertion: StartGame() reaches game_ends_in_draw with prob
-********Verification Result********
-The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.38512, 0.73622];
-
-********Verification Setting********
-Admissible Behavior: All
-Search Engine: Graph-based Probability Computation Based on Value Iteration
-System Abstraction: False
-Maximum difference threshold : 1E-06
-
-
-********Verification Statistics********
-Visited States:356167
-Total Transitions:457473
-MDP Iterations:1707006
-Time Used:9.4497357s
-Estimated Memory Used:285071.424KB
+Time Used:9.2266542s
+Estimated Memory Used:289708.768KB
 
 

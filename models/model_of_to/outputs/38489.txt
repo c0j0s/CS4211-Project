@@ -1,45 +1,27 @@
 =======================================================
-Assertion: StartGame() deadlockfree
+Assertion: StartGame() reaches away_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() deadlockfree) is VALID.
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.15388, 0.45268];
 
 ********Verification Setting********
 Admissible Behavior: All
-Search Engine: First Witness Trace using Depth First Search
+Search Engine: Graph-based Probability Computation Based on Value Iteration
 System Abstraction: False
+Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:32210
-Total Transitions:41343
-Time Used:0.4391128s
-Estimated Memory Used:16512.64KB
+Visited States:32082
+Total Transitions:41278
+MDP Iterations:753781
+Time Used:1.9140534s
+Estimated Memory Used:69235.368KB
 
 
 =======================================================
 Assertion: StartGame() reaches home_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() reaches home_team_wins with prob) is NOT valid.
-
-
-********Verification Setting********
-Admissible Behavior: All
-Search Engine: Graph-based Probability Computation Based on Value Iteration
-System Abstraction: False
-Maximum difference threshold : 1E-06
-
-
-********Verification Statistics********
-Visited States:32210
-Total Transitions:41343
-Time Used:0.7787141s
-Estimated Memory Used:56118.44KB
-
-
-=======================================================
-Assertion: StartGame() reaches game_ends_in_draw with prob
-********Verification Result********
-The Assertion (StartGame() reaches game_ends_in_draw with prob) is Valid with Probability [0.32975, 0.65574];
+The Assertion (StartGame() reaches home_team_wins with prob) is Valid with Probability [0.12326, 0.36003];
 
 ********Verification Setting********
 Admissible Behavior: All
@@ -49,10 +31,10 @@ Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:31580
-Total Transitions:40361
-MDP Iterations:460394
-Time Used:1.0563144s
-Estimated Memory Used:54586.776KB
+Visited States:32082
+Total Transitions:41278
+MDP Iterations:762792
+Time Used:1.6027256s
+Estimated Memory Used:65159.8KB
 
 

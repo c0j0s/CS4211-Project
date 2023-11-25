@@ -2,8 +2,8 @@
 import pandas as pd
 import os
 
-betting_input='../betting_simulation/betting_dataset/'
-original_prob_input='../betting_simulation/original_probabilities/'
+betting_input='../../betting_simulation/betting_dataset/'
+original_prob_input='../../betting_simulation/original_probabilities/'
 new_prob_input='./new_probabilities/'
 output='./merged/'
 

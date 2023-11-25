@@ -1,4 +1,4 @@
-match_id,prob,prob_min,prob_max,model
+match_id,home_prob,home_prob_min,home_prob_max,model
 12115,0.22062,0.07494,0.3663,of_to_sc_ko
 12116,0.321445,0.16007,0.48282,of_to_sc_ko
 12117,0.29593,0.13355,0.45831,of_to_sc_ko

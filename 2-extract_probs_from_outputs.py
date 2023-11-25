@@ -11,9 +11,9 @@ model = input("model: ")
 def read_directory(path, extension='.txt'):
     return [f for f in os.listdir(path) if f.endswith(extension)]
 
-def write_csv(file_path, dataset):
+def write_csv(file_path, dataset, headers):
     with open(file_path, 'w', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=['match_id', 'prob', "prob_min", "prob_max", 'model'])
+        writer = csv.DictWriter(csv_file, fieldnames=headers)
         writer.writeheader()
         writer.writerows(dataset)
 
@@ -42,22 +42,22 @@ def main():
             
             away_dataset.append({
                 "match_id"  :meta[0],
-                "prob"      :probs[0][mode],
-                "prob_min"  :probs[0]['min'],
-                "prob_max"  :probs[0]['max'],
+                "away_prob"      :probs[0][mode],
+                "away_prob_min"  :probs[0]['min'],
+                "away_prob_max"  :probs[0]['max'],
                 "model"     :model
             })
         
             home_dataset.append({
                 "match_id"  :meta[0],
-                "prob"      :probs[1][mode],
-                "prob_min"  :probs[1]['min'],
-                "prob_max"  :probs[1]['max'],
+                "home_prob"      :probs[1][mode],
+                "home_prob_min"  :probs[1]['min'],
+                "home_prob_max"  :probs[1]['max'],
                 "model"     :model
             })
             
-    # write_csv(f'{output}/away_probs.csv', away_dataset)
-    write_csv(f'./home_probs.csv', home_dataset)
+    write_csv(f'./away_probs.csv', away_dataset, headers=['match_id', 'away_prob', "away_prob_min", "away_prob_max", 'model'])
+    write_csv(f'./home_probs.csv', home_dataset, headers=['match_id', 'home_prob', "home_prob_min", "home_prob_max", 'model'])
 
 if __name__ == '__main__':
     main()

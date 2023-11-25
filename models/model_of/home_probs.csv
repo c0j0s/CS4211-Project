@@ -1,4 +1,4 @@
-match_id,prob,prob_min,prob_max,model
+match_id,home_prob,home_prob_min,home_prob_max,model
 12115,0.39823000000000003,0.15666,0.6398,of
 12116,0.5794199999999999,0.34772,0.81112,of
 12117,0.53079,0.28053,0.78105,of

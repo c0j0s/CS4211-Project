@@ -1,19 +1,21 @@
 =======================================================
-Assertion: StartGame() deadlockfree
+Assertion: StartGame() reaches away_team_wins with prob
 ********Verification Result********
-The Assertion (StartGame() deadlockfree) is VALID.
+The Assertion (StartGame() reaches away_team_wins with prob) is Valid with Probability [0.28549, 0.79605];
 
 ********Verification Setting********
 Admissible Behavior: All
-Search Engine: First Witness Trace using Depth First Search
+Search Engine: Graph-based Probability Computation Based on Value Iteration
 System Abstraction: False
+Maximum difference threshold : 1E-06
 
 
 ********Verification Statistics********
-Visited States:2168
-Total Transitions:2815
-Time Used:0.0777206s
-Estimated Memory Used:15174.624KB
+Visited States:2166
+Total Transitions:2813
+MDP Iterations:2925273
+Time Used:0.9567387s
+Estimated Memory Used:38993.672KB
 
 
 =======================================================
@@ -32,7 +34,7 @@ Maximum difference threshold : 1E-06
 Visited States:2166
 Total Transitions:2813
 MDP Iterations:2731616
-Time Used:1.0860757s
-Estimated Memory Used:38136.856KB
+Time Used:0.9479782s
+Estimated Memory Used:38136.472KB
 
 
