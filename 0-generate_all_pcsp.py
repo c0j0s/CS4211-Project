@@ -22,11 +22,20 @@ def main():
     # list of model templates
     models = [f for f in os.listdir(model_folders) if f.endswith('.pcsp')]
 
+    # create models folder 
+    if not os.path.exists("./models"):
+        os.makedirs("./models")
+
     # iterate experiment folder for model templates
     for model_filename in models:
         print(f'Generating pcsp for {model_filename}')
         model_name = model_filename.split('.')[0].replace('template','model')
         output_path=f'models/{model_name}/inputs'
+
+        if not os.path.exists(f"models/{model_name}"):
+            os.makedirs(f"models/{model_name}")
+            os.makedirs(f"models/{model_name}/inputs")
+            os.makedirs(f"models/{model_name}/outputs")
 
         # iterate dataset to generate pcsp files for all matches 
         with open(f'{model_folders}/{model_filename}', "r") as pcsp_template_file:
